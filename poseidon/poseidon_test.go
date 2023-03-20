@@ -31,5 +31,5 @@ func TestPoseidon(t *testing.T) {
 	assignment.Data = input
 	assignment.Hash, _ = hash.Hash([]*big.Int{input})
 
-	assert.SolvingSucceeded(&circuit, &assignment, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
+	assert.SolvingSucceeded(&circuit, &assignment, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
 }
