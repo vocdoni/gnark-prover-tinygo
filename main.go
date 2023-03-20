@@ -1,10 +1,12 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark/backend/groth16"
+	"github.com/consensys/gnark-crypto/kzg"
+	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/constraint"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/permutation/keccakf"
@@ -51,29 +53,37 @@ func main() {
 		panic(err)
 	}
 	defer fcircuit.Close()
-	cs := groth16.NewCS(ecc.BN254)
-	if _, err := cs.ReadFrom(fcircuit); err != nil {
+	ccs := plonk.NewCS(ecc.BN254)
+	if _, err := ccs.ReadFrom(fcircuit); err != nil {
 		panic(err)
 	}
 
-	fpk, err := os.Open("proving_key.bin")
+	// load the KZG srs from file
+	srs := kzg.NewSRS(ecc.BN254)
+	fkzg, err := os.Open("kzg.bin")
 	if err != nil {
 		panic(err)
 	}
-	defer fpk.Close()
-	pk := groth16.NewProvingKey(ecc.BN254)
-	if _, err := pk.ReadFrom(fpk); err != nil {
+	defer fkzg.Close()
+	if _, err := srs.ReadFrom(fkzg); err != nil {
 		panic(err)
+	}
+
+	// Generate the proving and verification keys.
+	pk, _, err := plonk.Setup(ccs, srs)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// witness definition
 	assignment := CubicCircuit{X: 3, Y: 35}
 	witness, _ := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
 
-	// groth16: Prove & Verify
-	proof, err := groth16.Prove(cs, pk, witness)
+	// Prove & Verify
+	proof, err := plonk.Prove(ccs, pk, witness)
 	if err != nil {
 		panic(err)
 	}
+
 	proof.WriteTo(os.Stdout)
 }
