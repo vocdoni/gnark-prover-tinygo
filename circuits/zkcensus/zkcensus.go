@@ -35,7 +35,6 @@ func (circuit *ZkCensusCircuit) Define(api frontend.API) error {
 	if err != nil {
 		return err
 	}
-
 	// check the Merkletree with census root, siblings, zkAddress and factory
 	// weight
 	if err := smt.Verifier(api, circuit.CensusRoot, zkAddr.Scalar, circuit.FactoryWeight, circuit.CensusSiblings[:]); err != nil {
@@ -44,6 +43,5 @@ func (circuit *ZkCensusCircuit) Define(api frontend.API) error {
 	// check nullifier (electionID + privateKey)
 	computedNullifier := poseidon.Hash(api, circuit.PrivateKey, circuit.ElectionId[0], circuit.ElectionId[1])
 	api.AssertIsEqual(circuit.Nullifier, computedNullifier)
-
 	return nil
 }
