@@ -10,11 +10,11 @@ import (
 
 type ZkCensusCircuit struct {
 	// Public inputs
-	ElectionId    [2]frontend.Variable
-	CensusRoot    frontend.Variable
-	Nullifier     frontend.Variable
-	FactoryWeight frontend.Variable
-	VoteHash      [2]frontend.Variable
+	ElectionId    [2]frontend.Variable `gnark:",public"`
+	CensusRoot    frontend.Variable    `gnark:",public"`
+	Nullifier     frontend.Variable    `gnark:",public"`
+	FactoryWeight frontend.Variable    `gnark:",public"`
+	VoteHash      [2]frontend.Variable `gnark:",public"`
 	// Private inputs
 	CensusSiblings [160]frontend.Variable
 	PrivateKey     frontend.Variable
@@ -36,8 +36,6 @@ func (circuit *ZkCensusCircuit) Define(api frontend.API) error {
 		return err
 	}
 
-	api.Println(zkAddr.Scalar)
-	api.Println(zkAddr.Public)
 	// check the Merkletree with census root, siblings, zkAddress and factory
 	// weight
 	if err := smt.Verifier(api, circuit.CensusRoot, zkAddr.Scalar, circuit.FactoryWeight, circuit.CensusSiblings[:]); err != nil {

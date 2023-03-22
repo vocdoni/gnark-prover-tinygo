@@ -3,7 +3,6 @@ package zkcensus
 import (
 	"crypto/sha256"
 	"flag"
-	"fmt"
 	"gnark-test/internal/zkaddress"
 	"math/big"
 	"testing"
@@ -56,28 +55,27 @@ func correctInputs(t *testing.T) ZkCensusCircuit {
 	})
 	c.Assert(err, qt.IsNil)
 
-	mockValue := big.NewInt(10)
+	factoryWeight := big.NewInt(10)
+	encFactoryWeight := arbo.BigIntToBytes(arbo.HashFunctionPoseidon.Len(), factoryWeight)
 	candidate, err := zkaddress.FromBytes([]byte("1b505cdafb4b1150b1a740633af41e5e1f19a5c4"))
-
-	fmt.Println(candidate.Scalar)
-	fmt.Println(candidate.Public)
 	c.Assert(err, qt.IsNil)
 
-	err = arboTree.Add(candidate.Scalar.Bytes(), mockValue.Bytes())
+	err = arboTree.Add(candidate.ArboBytes(), encFactoryWeight)
 	c.Assert(err, qt.IsNil)
 
 	for i := 1; i < *nKeys; i++ {
-		k, err := zkaddress.FromBytes([]byte(util.RandomHex(32)))
+		k, err := zkaddress.FromBytes(util.RandomBytes(32))
 		c.Assert(err, qt.IsNil)
-		err = arboTree.Add(k.Scalar.Bytes(), mockValue.Bytes())
+
+		err = arboTree.Add(k.ArboBytes(), encFactoryWeight)
 		c.Assert(err, qt.IsNil)
 	}
 
-	key, value, pSiblings, exist, err := arboTree.GenProof(candidate.Scalar.Bytes())
+	key, value, pSiblings, exist, err := arboTree.GenProof(candidate.ArboBytes())
 	c.Assert(err, qt.IsNil)
 	c.Assert(exist, qt.IsTrue)
-	c.Assert(key, qt.ContentEquals, candidate.Scalar.Bytes())
-	c.Assert(value, qt.ContentEquals, mockValue.Bytes())
+	c.Assert(key, qt.ContentEquals, candidate.ArboBytes())
+	c.Assert(value, qt.ContentEquals, encFactoryWeight)
 
 	uSiblings, err := arbo.UnpackSiblings(arbo.HashFunctionPoseidon, pSiblings)
 	c.Assert(err, qt.IsNil)
@@ -93,19 +91,18 @@ func correctInputs(t *testing.T) ZkCensusCircuit {
 
 	root, err := arboTree.Root()
 	c.Assert(err, qt.IsNil)
-	censusRoot := arbo.BytesToBigInt(root)
 
-	electionId := BytesToArbo([]byte(util.RandomHex(32)))
+	electionId := BytesToArbo(util.RandomBytes(32))
 	nullifier, err := poseidon.Hash([]*big.Int{candidate.Private, electionId[0], electionId[1]})
 	c.Assert(err, qt.IsNil)
 
-	voteHash := BytesToArbo(mockValue.Bytes())
+	voteHash := BytesToArbo(factoryWeight.Bytes())
 	c.Assert(err, qt.IsNil)
 	return ZkCensusCircuit{
 		ElectionId:     [2]frontend.Variable{electionId[0], electionId[1]},
-		CensusRoot:     censusRoot,
+		CensusRoot:     arbo.BytesToBigInt(root),
 		Nullifier:      nullifier,
-		FactoryWeight:  mockValue,
+		FactoryWeight:  factoryWeight,
 		VoteHash:       [2]frontend.Variable{voteHash[0], voteHash[1]},
 		CensusSiblings: siblings,
 		PrivateKey:     candidate.Private,
