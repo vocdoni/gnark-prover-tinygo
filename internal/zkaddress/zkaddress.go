@@ -15,9 +15,17 @@ type ZkAddress struct {
 	Scalar  *big.Int
 }
 
-// func(zkAddr *ZkAddress) ArboKey(weight *big.Int) ([]byte, error) {
-// 	return poseidon.Hash()
-// }
+func (zkAddr *ZkAddress) ArboBytes() []byte {
+	bScalar := zkAddr.Scalar.Bytes()
+	// swap endianess
+	for i, j := 0, len(bScalar)-1; i < j; i, j = i+1, j-1 {
+		bScalar[i], bScalar[j] = bScalar[j], bScalar[i]
+	}
+	// truncate to default length and return
+	res := make([]byte, DefaultZkAddressLen)
+	copy(res[:], bScalar)
+	return res[:]
+}
 
 func FromBytes(seed []byte) (*ZkAddress, error) {
 	// Setup the curve
