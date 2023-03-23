@@ -1,7 +1,7 @@
 package smt
 
 import (
-	"gnark-test/std/hash/poseidon"
+	"gnark-prover-tinygo/std/hash/poseidon"
 
 	"github.com/consensys/gnark/frontend"
 )

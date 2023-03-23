@@ -1,9 +1,9 @@
 package zkcensus
 
 import (
-	"gnark-test/std/hash/poseidon"
-	"gnark-test/std/smt"
-	"gnark-test/std/zkaddress"
+	"gnark-prover-tinygo/std/hash/poseidon"
+	"gnark-prover-tinygo/std/smt"
+	"gnark-prover-tinygo/std/zkaddress"
 
 	"github.com/consensys/gnark/frontend"
 )

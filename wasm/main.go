@@ -1,6 +1,6 @@
 package main
 
-import "gnark-test/internal/circuit"
+import "gnark-prover-tinygo/internal/circuit"
 
 func main() {}
 

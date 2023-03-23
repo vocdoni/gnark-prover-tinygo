@@ -1,4 +1,4 @@
-module gnark-test
+module gnark-prover-tinygo
 
 go 1.19
 

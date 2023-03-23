@@ -1,7 +1,7 @@
 package zkaddress
 
 import (
-	"gnark-test/std/hash/poseidon"
+	"gnark-prover-tinygo/std/hash/poseidon"
 
 	ecc "github.com/consensys/gnark-crypto/ecc/twistededwards"
 	"github.com/consensys/gnark/frontend"

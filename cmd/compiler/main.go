@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gnark-test/circuits/zkcensus"
+	"gnark-prover-tinygo/circuits/zkcensus"
 	"log"
 	"os"
 

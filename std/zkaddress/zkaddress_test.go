@@ -1,7 +1,7 @@
 package zkaddress
 
 import (
-	"gnark-test/internal/zkaddress"
+	"gnark-prover-tinygo/internal/zkaddress"
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"

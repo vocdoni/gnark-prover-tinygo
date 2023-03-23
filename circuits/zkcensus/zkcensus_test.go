@@ -3,7 +3,7 @@ package zkcensus
 import (
 	"crypto/sha256"
 	"flag"
-	"gnark-test/internal/zkaddress"
+	"gnark-prover-tinygo/internal/zkaddress"
 	"math/big"
 	"testing"
 

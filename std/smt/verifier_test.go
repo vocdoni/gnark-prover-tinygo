@@ -1,7 +1,7 @@
 package smt
 
 import (
-	"gnark-test/internal/zkaddress"
+	"gnark-prover-tinygo/internal/zkaddress"
 	"math/big"
 	"testing"
 
