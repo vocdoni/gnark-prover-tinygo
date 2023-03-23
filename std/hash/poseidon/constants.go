@@ -9,6 +9,10 @@ var (
 	S = parse1D(strS)
 )
 
+func getConstant[T any](constant []T, round int) T {
+	return constant[round-2]
+}
+
 func parseList(input []string) []*big.Int {
 	list := make([]*big.Int, len(input))
 	for i := 0; i < len(input); i++ {
@@ -20,7 +24,7 @@ func parseList(input []string) []*big.Int {
 
 func parse1D(input [][]string) [][]*big.Int {
 	res := make([][]*big.Int, len(input))
-	for i := 2; i < len(input); i++ {
+	for i := 0; i < len(input); i++ {
 		res[i] = parseList(input[i])
 	}
 
@@ -29,7 +33,7 @@ func parse1D(input [][]string) [][]*big.Int {
 
 func parse2D(input [][][]string) [][][]*big.Int {
 	res := make([][][]*big.Int, len(input))
-	for i := 2; i < len(input); i++ {
+	for i := 0; i < len(input); i++ {
 		res[i] = make([][]*big.Int, len(input[i]))
 		for j := 0; j < len(input[i]); j++ {
 			res[i][j] = parseList(input[i][j])
@@ -40,8 +44,6 @@ func parse2D(input [][][]string) [][][]*big.Int {
 }
 
 var strC = [][]string{
-	{},
-	{},
 	{
 		"4417881134626180770308697923359573201005643519861877412381846989312604493735",
 		"5433650512959517612316327474713065966758808864213826738576266661723522780033",
@@ -2285,8 +2287,6 @@ var strC = [][]string{
 }
 
 var strM = [][][]string{
-	{},
-	{},
 	{
 		{
 			"2910766817845651019878574839501801340070030115151021261302834310722729507541",
@@ -4410,8 +4410,6 @@ var strM = [][][]string{
 }
 
 var strS = [][]string{
-	{},
-	{},
 	{
 		"2910766817845651019878574839501801340070030115151021261302834310722729507541",
 		"14392831394556883151981305211846637368219175236435029476710156182825234647903",
@@ -22731,8 +22729,6 @@ var strS = [][]string{
 }
 
 var strP = [][][]string{
-	{},
-	{},
 	{
 		{
 			"2910766817845651019878574839501801340070030115151021261302834310722729507541",

@@ -67,10 +67,10 @@ func Poseidon(api frontend.API, inputs []frontend.Variable, initialState fronten
 	t := nInputs + 1
 	nRoundsF := 8
 	nRoundsP := nRoundsPC[t-2]
-	c := C[t]
-	s := S[t]
-	m := M[t]
-	p := P[t]
+	c := getConstant(C, t)
+	s := getConstant(S, t)
+	m := getConstant(M, t)
+	p := getConstant(P, t)
 
 	state := make([]frontend.Variable, t)
 	for j := 0; j < t; j++ {
