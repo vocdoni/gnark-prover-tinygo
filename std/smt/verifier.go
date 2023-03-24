@@ -4,10 +4,7 @@
 //   - https://github.com/iden3/circomlib/tree/a8cdb6cd1ad652cca1a409da053ec98f19de6c9d/circuits/smt
 package smt
 
-import (
-	"github.com/consensys/gnark/frontend"
-	"github.com/consensys/gnark/std/math/bits"
-)
+import "github.com/consensys/gnark/frontend"
 
 func Verifier(api frontend.API,
 	root, key, value frontend.Variable, siblings []frontend.Variable) error {
@@ -35,7 +32,7 @@ func smtverifier(api frontend.API,
 	// [STEP 2]
 	// component n2bNew = Num2Bits_strict();
 	// n2bNew.in <== key;
-	n2bNew := bits.ToBinary(api, key)
+	n2bNew := api.ToBinary(key, api.Compiler().FieldBitLen())
 
 	// [STEP 3]
 	// component smtLevIns = SMTLevIns(nLevels);
