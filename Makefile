@@ -14,5 +14,8 @@ wasm-opt-circuit:
 go-compile-circuit:
 	GOOS=js GOARCH=wasm go build -o wasm/circuit.wasm wasm/main.go
 
+run-example:
+	@go run example/main.go
+
 default: main.wasm
 
