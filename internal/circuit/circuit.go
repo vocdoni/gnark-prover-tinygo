@@ -38,6 +38,10 @@ func GenerateProof(bccs, bsrs, inputs []byte) ([]byte, []byte, []byte, error) {
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "error generating plonk keys")
 	}
+
+	// var c zkcensus.ZkCensusCircuit
+	// r1cs, _ := frontend.Compile(ecc.BN254.ScalarField(), scs.NewBuilder, &c)
+
 	// Generate the proof
 	proof, err := plonk.Prove(ccs, provingKey, cWitness)
 	if err != nil {

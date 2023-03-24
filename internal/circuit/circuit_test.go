@@ -33,7 +33,6 @@ func TestEnd2EndCircuit(t *testing.T) {
 	_, err = ccs.WriteTo(&ccsBuff)
 	c.Assert(err, qt.IsNil)
 
-	// srs := kzg.NewSRS(ecc.BN254)
 	srs, err := test.NewKZGSRS(ccs)
 	c.Assert(err, qt.IsNil)
 
