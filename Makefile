@@ -11,5 +11,8 @@ compile-circuit:
 wasm-opt-circuit:
 	wasm-opt -O wasm/circuit.wasm -o wasm/circuit.wasm --enable-bulk-memory
 
+go-compile-circuit:
+	GOOS=js GOARCH=wasm go build -o wasm/circuit.wasm wasm/main.go
+
 default: main.wasm
 
