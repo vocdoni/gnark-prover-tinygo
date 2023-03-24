@@ -3,15 +3,16 @@ package zkcensus
 import (
 	"crypto/sha256"
 	"flag"
+	"fmt"
 	"gnark-prover-tinygo/internal/zkaddress"
 	"math/big"
+	"os"
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/test"
-	qt "github.com/frankban/quicktest"
 	"github.com/iden3/go-iden3-crypto/poseidon"
 	"go.vocdoni.io/dvote/db"
 	"go.vocdoni.io/dvote/db/pebbledb"
@@ -43,42 +44,60 @@ func BytesToArbo(input []byte) [2]*big.Int {
 	}
 }
 
-func correctInputs(t *testing.T) ZkCensusCircuit {
-	c := qt.New(t)
-	database, err := pebbledb.New(db.Options{Path: t.TempDir()})
-	c.Assert(err, qt.IsNil)
+func correctInputs() (ZkCensusCircuit, error) {
+	dbTemp, err := os.MkdirTemp("", "db")
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
+	database, err := pebbledb.New(db.Options{Path: dbTemp})
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	arboTree, err := arbo.NewTree(arbo.Config{
 		Database:     database,
 		MaxLevels:    *nLevels,
 		HashFunction: arbo.HashFunctionPoseidon,
 	})
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	factoryWeight := big.NewInt(10)
 	encFactoryWeight := arbo.BigIntToBytes(arbo.HashFunctionPoseidon.Len(), factoryWeight)
 	candidate, err := zkaddress.FromBytes([]byte("1b505cdafb4b1150b1a740633af41e5e1f19a5c4"))
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	err = arboTree.Add(candidate.ArboBytes(), encFactoryWeight)
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	for i := 1; i < *nKeys; i++ {
 		k, err := zkaddress.FromBytes(util.RandomBytes(32))
-		c.Assert(err, qt.IsNil)
+		if err != nil {
+			return ZkCensusCircuit{}, err
+		}
 
 		err = arboTree.Add(k.ArboBytes(), encFactoryWeight)
-		c.Assert(err, qt.IsNil)
+		if err != nil {
+			return ZkCensusCircuit{}, err
+		}
 	}
 
-	key, value, pSiblings, exist, err := arboTree.GenProof(candidate.ArboBytes())
-	c.Assert(err, qt.IsNil)
-	c.Assert(exist, qt.IsTrue)
-	c.Assert(key, qt.ContentEquals, candidate.ArboBytes())
-	c.Assert(value, qt.ContentEquals, encFactoryWeight)
+	_, _, pSiblings, exist, err := arboTree.GenProof(candidate.ArboBytes())
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	} else if !exist {
+		return ZkCensusCircuit{}, fmt.Errorf("key does not exists")
+	}
 
 	uSiblings, err := arbo.UnpackSiblings(arbo.HashFunctionPoseidon, pSiblings)
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	siblings := [160]frontend.Variable{}
 	for i := 0; i < 160; i++ {
@@ -90,14 +109,17 @@ func correctInputs(t *testing.T) ZkCensusCircuit {
 	}
 
 	root, err := arboTree.Root()
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	electionId := BytesToArbo(util.RandomBytes(32))
 	nullifier, err := poseidon.Hash([]*big.Int{candidate.Private, electionId[0], electionId[1]})
-	c.Assert(err, qt.IsNil)
+	if err != nil {
+		return ZkCensusCircuit{}, err
+	}
 
 	voteHash := BytesToArbo(factoryWeight.Bytes())
-	c.Assert(err, qt.IsNil)
 	return ZkCensusCircuit{
 		ElectionId:     [2]frontend.Variable{electionId[0], electionId[1]},
 		CensusRoot:     arbo.BytesToBigInt(root),
@@ -107,7 +129,23 @@ func correctInputs(t *testing.T) ZkCensusCircuit {
 		CensusSiblings: siblings,
 		PrivateKey:     candidate.Private,
 		VotingWeight:   big.NewInt(5),
+	}, nil
+}
+
+func SerializeWitness() error {
+	success, err := correctInputs()
+	if err != nil {
+		return err
 	}
+	witness, _ := frontend.NewWitness(&success, ecc.BN254.ScalarField())
+	f, err := os.Create("./witness")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = witness.WriteTo(f)
+	return err
 }
 
 func TestZkCensusCircuit(t *testing.T) {
@@ -118,6 +156,6 @@ func TestZkCensusCircuit(t *testing.T) {
 	fail := emptyInput()
 	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
 
-	success := correctInputs(t)
+	success, _ := correctInputs()
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
 }
