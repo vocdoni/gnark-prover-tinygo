@@ -5,10 +5,23 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
+	"github.com/consensys/gnark/backend"
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"
+	"github.com/consensys/gnark/constraint/solver"
+	"github.com/consensys/gnark/std/math/bits"
 	"github.com/pkg/errors"
 )
+
+// solverOps fixes the issue that raises when a prover tries to generate a proof
+// of a serialized circuit. Check more information here:
+//   - https://github.com/ConsenSys/gnark/issues/600
+//
+// This means that the prove and verify processes are not 100% generic, because
+// if a future circuit uses some other "optimistic" functions, new hint
+// functions will need to be included, making the circuit instantiation
+// suboptimal.
+var solverOps = backend.WithSolverOptions(solver.WithHints(bits.NBits))
 
 // GenerateProof sets up the circuit with the constrain system and the srs files
 // provided and generates the proof for the JSON encoded inputs (witness). It
@@ -39,11 +52,8 @@ func GenerateProof(bccs, bsrs, inputs []byte) ([]byte, []byte, []byte, error) {
 		return nil, nil, nil, errors.Wrap(err, "error generating plonk keys")
 	}
 
-	// var c zkcensus.ZkCensusCircuit
-	// r1cs, _ := frontend.Compile(ecc.BN254.ScalarField(), scs.NewBuilder, &c)
-
 	// Generate the proof
-	proof, err := plonk.Prove(ccs, provingKey, cWitness)
+	proof, err := plonk.Prove(ccs, provingKey, cWitness, solverOps)
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "error generating proof")
 	}
