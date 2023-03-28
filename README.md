@@ -55,7 +55,7 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 
 ### Requirements
 * Go (1.20.2)
-* TinyGo ([@dgryski](https://github.com/dgryski) fork): [dgryski/tinygo@a73e4c6](https://github.com/dgryski/tinygo/commit/a73e4c635331045f6d3cd49ddb0b9efd0019f94c)
+* TinyGo ([@dgryski](https://github.com/dgryski) fork): [dgryski/tinygo@reflect-all-fixes-3](https://github.com/dgryski/tinygo/tree/dgryski/reflect-all-fixes-3)
 
 
 ### Circuit 
