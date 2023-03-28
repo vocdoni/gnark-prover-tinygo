@@ -1,7 +1,8 @@
 package artifacts
 
 import (
-	"gnark-prover-tinygo/internal/circuit"
+	"gnark-prover-tinygo/internal/circuit/groth16"
+	"gnark-prover-tinygo/internal/circuit/plonk"
 	"os"
 	"testing"
 
@@ -20,9 +21,18 @@ func TestArtifacts(t *testing.T) {
 	witness, err := os.ReadFile("witness")
 	c.Assert(err, qt.IsNil)
 
-	vk, proof, pubWitness, err := circuit.GenerateProof(ccs, srs, witness)
+	// Try Plonk artifacts
+	vk, proof, pubWitness, err := plonk.GenerateProof(ccs, srs, witness)
+	if err == nil {
+		err = plonk.VerifyProof(srs, vk, proof, pubWitness)
+		c.Assert(err, qt.IsNil)
+		return
+	}
+
+	// Try Groth16 artifacts
+	vk, proof, pubWitness, err = groth16.GenerateProof(ccs, srs, witness)
 	c.Assert(err, qt.IsNil)
 
-	err = circuit.VerifyProof(srs, vk, proof, pubWitness)
+	err = groth16.VerifyProof(srs, vk, proof, pubWitness)
 	c.Assert(err, qt.IsNil)
 }

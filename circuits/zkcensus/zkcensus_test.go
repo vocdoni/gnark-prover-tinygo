@@ -155,7 +155,9 @@ func TestZkCensusCircuit(t *testing.T) {
 
 	fail := emptyInput()
 	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
+	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
 
 	success, _ := correctInputs()
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
+	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
 }

@@ -1,3 +1,42 @@
+/*
+ZkCensus is the Vocdoni ZKSnark circuit to proof that a given voter is part of a
+created election census (in a Arbo Merkle Tree). The circuit checks:
+
+	-the prover is the owner of the private key
+	-keyHash (hash of the user's public key) belongs to the census
+		-the public key is generated based on the provided private key
+		-the public key is inside a hash, which is inside the Merkletree with
+		the CensusRoot and siblings (key=keyHash, value=factoryWeight)
+	-H(private key, processID) == nullifier
+		-to avoid proof reusability
+	-factoryWeight is the weight assigned by default to the owner of the private
+	key andincluded as merkle tree leaf value.
+	-votingWeight is the weight desired to vote by the owner of the private key
+	and must be less than or equal to the factoryWeightht.
+
+Circuit scheme:
+
+							+----+
+	PUB_votingWeight+------>+ <= +------------------+--PRI_factoryWeight
+							+----+					|
+													|
+							+-----------+			|
+							|			|			|
+	PUB_censusRoot+-------->+			|(value)<---+
+							|			|
+							| SMT		|			+-----------+	+-----------+
+							| Verifier	|			|			|	|			|
+	PRI_siblings+---------->+			|(key)<-----+ ZkAddress	+<--+	pubKey	+---+-+PRI_privateKey
+							|			|			|			|	|			|	|
+							+-----------+			+-----------+	+-----------+	|
+																					|
+										+-----------+								|
+							+----+		|			+<------------------------------+
+	PUB_nullifier+--------->+ == +<-----+ Poseidon	|<------------+PUB_processID_0
+							+----+		|			+<------------+PUB_processID_1
+										+-----------+
+	PUB_voteHash
+*/
 package zkcensus
 
 import (
