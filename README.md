@@ -79,7 +79,7 @@ Term descriptions:
                           +-----------+           |
                           |           |           |
   PUB_censusRoot+-------->+           |(value)<---+
-							            |           |
+                          |           |
                           | SMT       |           +-----------+   +-----------+
                           | Verifier  |           |           |   |           |
   PRI_siblings+---------->+           |(key)<-----+ ZkAddress	+<--+	pubKey	  +---+-+PRI_privateKey
