@@ -2,14 +2,11 @@ module gnark-prover-tinygo
 
 go 1.19
 
-// replace github.com/consensys/gnark => /home/p4u/repos/gnark
-
 require (
 	github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284
 	github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
-	github.com/pkg/errors v0.9.1
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
@@ -39,6 +36,7 @@ require (
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect

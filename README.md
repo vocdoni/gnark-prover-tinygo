@@ -39,16 +39,36 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
     - `SMTVerifier`: [Gnark](./std/smt/verifier.go) | [Circom](https://github.com/iden3/circomlib/blob/a8cdb6cd1ad652cca1a409da053ec98f19de6c9d/circuits/smt/smtverifier.circom).
 2. `ZkCensus` Vocdoni circuit port to Gnark: [Gnark](./circuits/zkcensus/zkcensus.go) | [Circom](https://github.com/vocdoni/zk-franchise-proof-circuit/blob/c2ead7f8502cf0dd7495140aec32599fd0a53199/circuit/census.circom).
 4. `ZkCensus` (Gnark version) compiler and artifacts enconder command implementation.
-    - Some blocks found and solved, read more [here](https://github.com/ConsenSys/gnark/issues/600).
+    - Some blocks found and solved <sup>[1](#problems-found)</sup>.
 3. Generic Gnark prover/verifier implementation.
-    - Go WASM compiler as baseline. Found some incompatibilities with TinyGo, read more [here](https://github.com/tinygo-org/tinygo/issues/447#issuecomment-1455205919). 
+    - Go WASM compiler as baseline. Found some incompatibilities with TinyGo<sup>[2](#problems-found)</sup>. 
+
+#### Problems found
+
+1. Solver missing hint(s):
+    - Issue on Gnark repository and partial solution: [ConsenSys/gnark#600](https://github.com/ConsenSys/gnark/issues/600).
+    - Final solution: [phated/gnark-browser](https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration).
+2. Missing reflect implementations in TinyGo:
+    - Issue on TinyGo repository: [tinygo-org/tinygo#447](https://github.com/tinygo-org/tinygo/issues/447#issuecomment-1455205919).
+    - Partial solution (fix the error during compilation, but not during execution): [dgryski/tinygo@reflect-all-fixes-3](https://github.com/dgryski/tinygo/tree/dgryski/reflect-all-fixes-3)
+
 
 ### Requirements
 * Go (1.20.2)
-* TinyGo (@dgryski fork): dgryski/tinygo@a73e4c635331045f6d3cd49ddb0b9efd0019f94c
+* TinyGo ([@dgryski](https://github.com/dgryski) fork): [dgryski/tinygo@a73e4c6](https://github.com/dgryski/tinygo/commit/a73e4c635331045f6d3cd49ddb0b9efd0019f94c)
 
 
 ### Circuit 
+The ZkCensus circuit anonymously proves that a voter is already registered in the census of a given election, making him or her a valid voter.
+
+The ZkCensus circuit proves the following assertions:
+1. The combination of the computed ZkAddress (using the given PrivateKey as seed) and the provided factoryWeight is a valid census tree leaf. This is tested computing the merkle root  with the candidate leaf and the provided siblings, and comparing the result with the provided census root.
+2. The provided nullifier is valid. This is tested computing the nullifier with the electionID and the privateKey, and comparing the result with the provided nullifier.
+3. The votingWeight is equal to or less than the factoryWeight.
+
+Term descriptions:
+* *ZkAddress*: the address of an anonymous voter in the Vochain, it is optimised for zk-snarks and helps to reduce the number of levels of the census merkle tree. It is based on the BN254 elliptic curve and it uses the voter private key as seed. Read more [here](https://github.com/vocdoni/vocdoni-node/blob/ca09fde59cef93f6b1de90c0c918adbff814e87e/crypto/zk/address.go).
+* *Nullifier*: the result of applying the Poseidon hash to the combination of the election ID and the voter private key.
 
 #### Schema
 ```
@@ -59,10 +79,10 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
                           +-----------+           |
                           |           |           |
   PUB_censusRoot+-------->+           |(value)<---+
-                          |           |
+							            |           |
                           | SMT       |           +-----------+   +-----------+
                           | Verifier  |           |           |   |           |
-  PRI_siblings+---------->+           |(key)<-----+ ZkAddress +<--+   pubKey  +---+-+PRI_privateKey
+  PRI_siblings+---------->+           |(key)<-----+ ZkAddress	+<--+	pubKey	  +---+-+PRI_privateKey
                           |           |           |           |   |           |   |
                           +-----------+           +-----------+   +-----------+   |
                                                                                   |
@@ -77,14 +97,14 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 #### Inputs
 | Name | Private/Public | Description |
 |:---:|:---:|:---|
-| *votingHeight* | `private` | The weight used to perform a vote. It must be equal to or lower than `factoryWeight`. |
-| *factoryHeight* | `public` | The weight assigned to the voter as Merkle Tree leaf value. |
-| *privateKey* | `private` | The voter private key. Seed of the ZkAddress.  |
-| *censusRoot* | `public` | The Merkle Root of the current census tree. |
-| *siblings* | `private` | Siblings of the voter ZkAddress leaf in the census tree. |
-| *nullifier* | `public` | Parameter that combines the *privateKey* with the *electionId* to avoid proof reusability. |
-| *electionId* | `public` | Encoded ID of the election. |
-| *voteHash* | `public` | Parameter that combines the *privateKey* with the *factoryWeight* to be include it into the proof witness. |
+| *votingHeight* | 🔐 `private` | The weight used to perform a vote. It must be equal to or lower than `factoryWeight`. |
+| *factoryHeight* | 📢 `public` | The weight assigned to the voter as Merkle Tree leaf value. |
+| *privateKey* | 🔐 `private` | The voter private key. Seed of the ZkAddress.  |
+| *censusRoot* | 📢 `public` | The Merkle Root of the current census tree. |
+| *siblings* | 🔐 `private` | Siblings of the voter ZkAddress leaf in the census tree. |
+| *nullifier* | 📢 `public` | Parameter that combines the *privateKey* with the *electionId* to avoid proof reusability. |
+| *electionId* | 📢 `public` | Encoded ID of the election. |
+| *voteHash* | 📢 `public` | Parameter that combines the *privateKey* with the *factoryWeight* to be include it into the proof witness. |
 
 ### Available commands
 * **Compile the prover and optimize the output**
@@ -104,8 +124,6 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
   make run-{compiler}-example
   ```
   Select the desired WebAssembly compiler (`go` or `tinygo`). It will use a previously compiled circuit artifacts.
-
-### Code example
 
 ### Results
 
