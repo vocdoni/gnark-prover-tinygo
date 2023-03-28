@@ -59,18 +59,18 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
                           +-----------+           |
                           |           |           |
   PUB_censusRoot+-------->+           |(value)<---+
-							            |           |
-                          | SMT   		|           +-----------+   +-----------+
-							            | Verifier	|           |           |   |           |
-  PRI_siblings+---------->+           |(key)<-----+ ZkAddress	+<--+	pubKey	  +---+-+PRI_privateKey
+                          |           |
+                          | SMT       |           +-----------+   +-----------+
+                          | Verifier  |           |           |   |           |
+  PRI_siblings+---------->+           |(key)<-----+ ZkAddress +<--+   pubKey  +---+-+PRI_privateKey
                           |           |           |           |   |           |   |
                           +-----------+           +-----------+   +-----------+   |
                                                                                   |
                                       +-----------+                               |
                           +----+      |           +<------------------------------+
-  PUB_nullifier+--------->+ == +<-----+ Poseidon	|<------------+PUB_processID_0
+  PUB_nullifier+--------->+ == +<-----+ Poseidon  |<------------+PUB_processID_0
                           +----+      |           +<------------+PUB_processID_1
-										                  +-----------+
+                                      +-----------+
   PUB_voteHash
 ```
 
