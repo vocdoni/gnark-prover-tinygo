@@ -13,29 +13,6 @@ created election census (in a Arbo Merkle Tree). The circuit checks:
 	key andincluded as merkle tree leaf value.
 	-votingWeight is the weight desired to vote by the owner of the private key
 	and must be less than or equal to the factoryWeightht.
-
-Circuit scheme:
-
-							+----+
-	PUB_votingWeight+------>+ <= +------------------+--PRI_factoryWeight
-							+----+					|
-													|
-							+-----------+			|
-							|			|			|
-	PUB_censusRoot+-------->+			|(value)<---+
-							|			|
-							| SMT		|			+-----------+	+-----------+
-							| Verifier	|			|			|	|			|
-	PRI_siblings+---------->+			|(key)<-----+ ZkAddress	+<--+	pubKey	+---+-+PRI_privateKey
-							|			|			|			|	|			|	|
-							+-----------+			+-----------+	+-----------+	|
-																					|
-										+-----------+								|
-							+----+		|			+<------------------------------+
-	PUB_nullifier+--------->+ == +<-----+ Poseidon	|<------------+PUB_processID_0
-							+----+		|			+<------------+PUB_processID_1
-										+-----------+
-	PUB_voteHash
 */
 package zkcensus
 

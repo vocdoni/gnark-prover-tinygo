@@ -52,25 +52,25 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 
 #### Schema
 ```
-							+----+
-	PUB_votingWeight+------>+ <= +------------------+--PRI_factoryWeight
-							+----+					|
-													|
-							+-----------+			|
-							|			|			|
-	PUB_censusRoot+-------->+			|(value)<---+
-							|			|
-							| SMT		|			+-----------+	+-----------+
-							| Verifier	|			|			|	|			|
-	PRI_siblings+---------->+			|(key)<-----+ ZkAddress	+<--+	pubKey	+---+-+PRI_privateKey
-							|			|			|			|	|			|	|
-							+-----------+			+-----------+	+-----------+	|
-																					|
-										+-----------+								|
-							+----+		|			+<------------------------------+
+                          +----+
+  PUB_votingWeight+------>+ <= +------------------+--PRI_factoryWeight
+                          +----+                  |
+                                                  |
+                          +-----------+           |
+                          |           |           |
+	PUB_censusRoot+-------->+           |(value)<---+
+							            |           |
+                          | SMT   		|           +-----------+   +-----------+
+							            | Verifier	|           |           |   |           |
+	PRI_siblings+---------->+           |(key)<-----+ ZkAddress	+<--+	pubKey	  +---+-+PRI_privateKey
+                          |           |           |           |   |           |   |
+                          +-----------+           +-----------+   +-----------+   |
+                                                                                  |
+                                      +-----------+                               |
+                          +----+      |           +<------------------------------+
 	PUB_nullifier+--------->+ == +<-----+ Poseidon	|<------------+PUB_processID_0
-							+----+		|			+<------------+PUB_processID_1
-										+-----------+
+                          +----+      |           +<------------+PUB_processID_1
+										                  +-----------+
 	PUB_voteHash
 ```
 
