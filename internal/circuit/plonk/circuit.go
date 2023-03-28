@@ -2,26 +2,19 @@ package plonk
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
-	"github.com/consensys/gnark/backend"
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"
-	"github.com/consensys/gnark/constraint/solver"
-	"github.com/consensys/gnark/std/math/bits"
-	"github.com/pkg/errors"
-)
 
-// solverOps fixes the issue that raises when a prover tries to generate a proof
-// of a serialized circuit. Check more information here:
-//   - https://github.com/ConsenSys/gnark/issues/600
-//
-// This means that the prove and verify processes are not 100% generic, because
-// if a future circuit uses some other "optimistic" functions, new hint
-// functions will need to be included, making the circuit instantiation
-// suboptimal.
-var solverOps = backend.WithSolverOptions(solver.WithHints(bits.NBits))
+	// This import fixes the issue that raises when a prover tries to generate a proof
+	// of a serialized circuit. Check more information here:
+	//   - https://github.com/ConsenSys/gnark/issues/600
+	//   - https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration
+	_ "github.com/consensys/gnark/std/math/bits"
+)
 
 // GenerateProof sets up the circuit with the constrain system and the srs files
 // provided and generates the proof for the JSON encoded inputs (witness). It
@@ -31,49 +24,49 @@ func GenerateProof(bccs, bsrs, inputs []byte) ([]byte, []byte, []byte, error) {
 	// Read and initialize circuit CS
 	ccs := plonk.NewCS(ecc.BN254)
 	if _, err := ccs.ReadFrom(bytes.NewReader(bccs)); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error reading circuit cs")
+		return nil, nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
 	// Read and initialize SSR
 	srs := kzg.NewSRS(ecc.BN254)
 	if _, err := srs.ReadFrom(bytes.NewReader(bsrs)); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error reading plonk srs")
+		return nil, nil, nil, fmt.Errorf("error reading plonk srs: %w", err)
 	}
 	// Read and initialize the witness
 	cWitness, err := witness.New(ecc.BN254.ScalarField())
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error initializing witness")
+		return nil, nil, nil, fmt.Errorf("error initializing witness: %w", err)
 	}
 	if _, err := cWitness.ReadFrom(bytes.NewReader(inputs)); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error reading witness")
+		return nil, nil, nil, fmt.Errorf("error reading witness: %w", err)
 	}
 	// Get proving and verifiying keys
 	provingKey, verifyingKey, err := plonk.Setup(ccs, srs)
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error generating plonk keys")
+		return nil, nil, nil, fmt.Errorf("error generating plonk keys: %w", err)
 	}
 
 	// Generate the proof
-	proof, err := plonk.Prove(ccs, provingKey, cWitness, solverOps)
+	proof, err := plonk.Prove(ccs, provingKey, cWitness)
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error generating proof")
+		return nil, nil, nil, fmt.Errorf("error generating proof: %w", err)
 	}
 	proofBuff := bytes.Buffer{}
 	if _, err := proof.WriteTo(&proofBuff); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error encoding proof")
+		return nil, nil, nil, fmt.Errorf("error encoding proof: %w", err)
 	}
 	// Get public witness part and encode it
 	publicWitness, err := cWitness.Public()
 	if err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error generating public witness")
+		return nil, nil, nil, fmt.Errorf("error generating public witness: %w", err)
 	}
 	publicWitnessBuff := bytes.Buffer{}
 	if _, err := publicWitness.WriteTo(&publicWitnessBuff); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error encoding public witness")
+		return nil, nil, nil, fmt.Errorf("error encoding public witness: %w", err)
 	}
 	// Encode verifiying key
 	verifyingKeyBuff := bytes.Buffer{}
 	if _, err := verifyingKey.WriteTo(&verifyingKeyBuff); err != nil {
-		return nil, nil, nil, errors.Wrap(err, "error encoding verifiying key")
+		return nil, nil, nil, fmt.Errorf("error encoding verifiying key: %w", err)
 	}
 	return verifyingKeyBuff.Bytes(),
 		proofBuff.Bytes(),
@@ -88,28 +81,28 @@ func VerifyProof(bsrs, bvk, bproof, bpubwitness []byte) error {
 	// Parse the verifiying key
 	verifiyingKey := plonk.NewVerifyingKey(ecc.BN254)
 	if _, err := verifiyingKey.ReadFrom(bytes.NewBuffer(bvk)); err != nil {
-		return errors.Wrap(err, "error reading verifiying key")
+		return fmt.Errorf("error reading verifiying key: %w", err)
 	}
 	// Read and initialize SSR
 	srs := kzg.NewSRS(ecc.BN254)
 	if _, err := srs.ReadFrom(bytes.NewReader(bsrs)); err != nil {
-		return errors.Wrap(err, "error reading plonk srs")
+		return fmt.Errorf("error reading plonk srs: %w", err)
 	}
 	if err := verifiyingKey.InitKZG(srs); err != nil {
-		return errors.Wrap(err, "error initializing srs verifiying key")
+		return fmt.Errorf("error initializing srs verifiying key: %w", err)
 	}
 	// Parse the proof
 	proof := plonk.NewProof(ecc.BN254)
 	if _, err := proof.ReadFrom(bytes.NewBuffer(bproof)); err != nil {
-		return errors.Wrap(err, "error reading proof")
+		return fmt.Errorf("error reading proof: %w", err)
 	}
 	// Parse the public witness
 	pubWitness, err := witness.New(ecc.BN254.ScalarField())
 	if err != nil {
-		return errors.Wrap(err, "error initializing public witness")
+		return fmt.Errorf("error initializing public witness: %w", err)
 	}
 	if _, err := pubWitness.ReadFrom(bytes.NewReader(bpubwitness)); err != nil {
-		return errors.Wrap(err, "error reading public witness")
+		return fmt.Errorf("error reading public witness: %w", err)
 	}
 	// Return the result of the verification process
 	return plonk.Verify(proof, verifiyingKey, pubWitness)
