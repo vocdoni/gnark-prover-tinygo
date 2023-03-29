@@ -7,8 +7,6 @@
         let wasmModule = await WebAssembly.instantiateStreaming(fetch("./circuit.wasm"), go.importObject);
         go.run(wasmModule.instance);
 
-        console.log(wasmModule);
-
         console.log("reading artifacts...");
 
         let resCCS = await fetch("/artifacts/zkcensus.ccs");

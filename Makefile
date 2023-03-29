@@ -27,4 +27,4 @@ run-go-example:
 	@go run examples/gowasm/main.go
 
 run-tinygo-example:
-	@go run examples/tinygo/main.go
+	@go run examples/tinygowasm/main.go
