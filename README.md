@@ -82,7 +82,7 @@ Term descriptions:
                           |           |
                           | SMT       |           +-----------+   +-----------+
                           | Verifier  |           |           |   |           |
-  PRI_siblings+---------->+           |(key)<-----+ ZkAddress	+<--+	pubKey    +---+-+PRI_privateKey
+  PRI_siblings+---------->+           |(key)<-----+ ZkAddress +<--+ pubKey    +---+-+PRI_privateKey
                           |           |           |           |   |           |   |
                           +-----------+           +-----------+   +-----------+   |
                                                                                   |
