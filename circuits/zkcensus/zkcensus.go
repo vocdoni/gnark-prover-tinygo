@@ -17,11 +17,11 @@ created election census (in a Arbo Merkle Tree). The circuit checks:
 package zkcensus
 
 import (
-	"gnark-prover-tinygo/std/hash/poseidon"
 	"gnark-prover-tinygo/std/smt"
 	"gnark-prover-tinygo/std/zkaddress"
 
 	"github.com/consensys/gnark/frontend"
+	"github.com/consensys/gnark/std/hash/mimc"
 )
 
 type ZkCensusCircuit struct {
@@ -57,7 +57,11 @@ func (circuit *ZkCensusCircuit) Define(api frontend.API) error {
 		return err
 	}
 	// check nullifier (electionID + privateKey)
-	computedNullifier := poseidon.Hash(api, circuit.PrivateKey, circuit.ElectionId[0], circuit.ElectionId[1])
-	api.AssertIsEqual(circuit.Nullifier, computedNullifier)
+	h, err := mimc.NewMiMC(api)
+	if err != nil {
+		return err
+	}
+	h.Write(circuit.PrivateKey, circuit.ElectionId[0], circuit.ElectionId[1])
+	api.AssertIsEqual(circuit.Nullifier, h.Sum())
 	return nil
 }
