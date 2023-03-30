@@ -8,6 +8,7 @@ require (
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
+	golang.org/x/crypto v0.7.0
 )
 
 require (
@@ -46,7 +47,6 @@ require (
 	github.com/rs/zerolog v1.29.0 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
