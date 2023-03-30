@@ -18,7 +18,7 @@ func TestArtifacts(t *testing.T) {
 	srs, err := os.ReadFile("./zkcensus.srs")
 	c.Assert(err, qt.IsNil)
 
-	witness, err := os.ReadFile("witness")
+	witness, err := os.ReadFile("./witness")
 	c.Assert(err, qt.IsNil)
 
 	// Try Plonk artifacts
