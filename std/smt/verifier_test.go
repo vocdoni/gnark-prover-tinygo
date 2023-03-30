@@ -1,7 +1,7 @@
 package smt
 
 import (
-	"gnark-prover-tinygo/internal/zkaddress"
+	"gnark-prover-tinygo/internal/arbo"
 	"math/big"
 	"testing"
 
@@ -12,8 +12,6 @@ import (
 	qt "github.com/frankban/quicktest"
 	"go.vocdoni.io/dvote/db"
 	"go.vocdoni.io/dvote/db/pebbledb"
-	"go.vocdoni.io/dvote/tree/arbo"
-	"go.vocdoni.io/dvote/util"
 )
 
 type testVerifierCircuit struct {
@@ -29,38 +27,47 @@ func (circuit *testVerifierCircuit) Define(api frontend.API) error {
 
 func successInputs(t *testing.T) testVerifierCircuit {
 	c := qt.New(t)
-
+	// set number of levels and max key and value length
+	nLevels := 160
+	kLen := nLevels / 8
+	// create database
 	database, err := pebbledb.New(db.Options{Path: t.TempDir()})
 	c.Assert(err, qt.IsNil)
-	arboTree, err := arbo.NewTree(arbo.Config{
+	// instance a new arbo tree
+	tree, err := arbo.NewTree(arbo.Config{
 		Database:     database,
-		MaxLevels:    160,
-		HashFunction: arbo.HashFunctionPoseidon,
+		MaxLevels:    nLevels,
+		HashFunction: arbo.HashFunctionMiMC,
 	})
 	c.Assert(err, qt.IsNil)
-
-	factoryWeight := big.NewInt(10)
-	candidate, err := zkaddress.FromBytes(util.RandomBytes(32))
 	c.Assert(err, qt.IsNil)
-	err = arboTree.Add(candidate.ArboBytes(), arbo.BigIntToBytes(arbo.HashFunctionPoseidon.Len(), factoryWeight))
-	c.Assert(err, qt.IsNil)
-
+	// add 100 more random keys to the arbo tree with the default value
 	for i := 0; i < 100; i++ {
-		k, err := zkaddress.FromBytes(util.RandomBytes(32))
-		c.Assert(err, qt.IsNil)
-		err = arboTree.Add(k.ArboBytes(), arbo.BigIntToBytes(arbo.HashFunctionPoseidon.Len(), factoryWeight))
+		k := arbo.BigIntToBytes(kLen, big.NewInt(int64(i)))
+		v := arbo.BigIntToBytes(kLen, big.NewInt(int64(i*2)))
+		err = tree.Add(k, v)
 		c.Assert(err, qt.IsNil)
 	}
-
-	key, value, pSiblings, exist, err := arboTree.GenProof(candidate.ArboBytes())
+	// get and encode the merkle root
+	root, err := tree.Root()
+	c.Assert(err, qt.IsNil)
+	// instance proof candidate key and default value
+	k := arbo.BigIntToBytes(kLen, new(big.Int).SetInt64(7))
+	v := arbo.BigIntToBytes(kLen, big.NewInt(14))
+	// generate the proof for the candidate key
+	kAux, vAux, pSiblings, exist, err := tree.GenProof(k)
 	c.Assert(err, qt.IsNil)
 	c.Assert(exist, qt.IsTrue)
-	c.Assert(key, qt.ContentEquals, candidate.ArboBytes())
-	c.Assert(value, qt.ContentEquals, arbo.BigIntToBytes(arbo.HashFunctionPoseidon.Len(), factoryWeight))
-
-	uSiblings, err := arbo.UnpackSiblings(arbo.HashFunctionPoseidon, pSiblings)
+	c.Assert(kAux, qt.DeepEquals, k)
+	c.Assert(vAux, qt.DeepEquals, v)
+	// check the generated proof
+	valid, err := arbo.CheckProof(tree.HashFunction(), k, v, root, pSiblings)
 	c.Assert(err, qt.IsNil)
-
+	c.Assert(valid, qt.IsTrue)
+	// unpack the proof siblings
+	uSiblings, err := arbo.UnpackSiblings(tree.HashFunction(), pSiblings)
+	c.Assert(err, qt.IsNil)
+	// encode the siblings into a array of circuit inputs
 	siblings := [160]frontend.Variable{}
 	for i := 0; i < 160; i++ {
 		if i < len(uSiblings) {
@@ -69,13 +76,10 @@ func successInputs(t *testing.T) testVerifierCircuit {
 			siblings[i] = big.NewInt(0)
 		}
 	}
-
-	root, err := arboTree.Root()
-	c.Assert(err, qt.IsNil)
 	return testVerifierCircuit{
 		Root:     arbo.BytesToBigInt(root),
-		Key:      candidate.Scalar,
-		Value:    factoryWeight,
+		Key:      arbo.BytesToBigInt(k),
+		Value:    arbo.BytesToBigInt(v),
 		Siblings: siblings,
 	}
 }

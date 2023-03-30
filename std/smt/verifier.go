@@ -25,9 +25,9 @@ func smtverifier(api frontend.API,
 
 	// [STEP 1]
 	// hash1Old = H(oldKey | oldValue | 1)
-	hash1Old := endLeafValue(api, oldKey, oldValue)
+	hash1Old := mimcEndLeafValue(api, oldKey, oldValue)
 	// hash1New = H(key | value | 1)
-	hash1New := endLeafValue(api, key, value)
+	hash1New := mimcEndLeafValue(api, key, value)
 
 	// [STEP 2]
 	// component n2bNew = Num2Bits_strict();
@@ -66,8 +66,8 @@ func smtverifier(api frontend.API,
 		sm[i] = [5]frontend.Variable{stTop, stIold, stI0, stInew, stNa}
 	}
 
+	// sm[nLevels-1].st_na + sm[nLevels-1].st_iold + sm[nLevels-1].st_inew + sm[nLevels-1].st_i0 === 1
 	api.AssertIsEqual(api.Add(
-		// sm[nLevels-1].st_na + sm[nLevels-1].st_iold + sm[nLevels-1].st_inew + sm[nLevels-1].st_i0 === 1
 		sm[nLevels-1][4], sm[nLevels-1][1], sm[nLevels-1][3], sm[nLevels-1][2],
 	), 1)
 
@@ -124,32 +124,23 @@ func smtLevIns(api frontend.API, siblings []frontend.Variable, enabled frontend.
 	if api.IsZero(enabled) == 0 {
 		api.AssertIsEqual(siblings[nLevels-1], 0)
 	}
-
-	// for (i=0; i<nLevels; i++) {
-	//     isZero[i] = IsZero();
-	//     isZero[i].in <== siblings[i];
-	// }
-	isZero := make([]frontend.Variable, nLevels)
 	isDone := make([]frontend.Variable, nLevels-1)
-	for i := 0; i < nLevels; i++ {
-		isZero[i] = api.IsZero(siblings[i])
-	}
-
 	levIns := make([]frontend.Variable, nLevels)
-	last := api.Sub(1, isZero[nLevels-2])
+	last := api.Sub(1, api.IsZero(siblings[nLevels-2]))
 	// levIns[nLevels-1] <== (1-isZero[nLevels-2].out);
 	levIns[nLevels-1] = last
 	// done[nLevels-2] <== levIns[nLevels-1];
 	isDone[nLevels-2] = last
 	for i := nLevels - 2; i > 0; i-- {
+		// isZero[i-1] = IsZero();
+		// isZero[i-1].in <== siblings[i];
 		// levIns[i] = (1-isDone[i])*(1-isZero[i-1])
-		levIns[i] = api.Mul(api.Sub(1, isDone[i]), api.Sub(1, isZero[i-1]))
+		levIns[i] = api.Mul(api.Sub(1, isDone[i]), api.Sub(1, api.IsZero(siblings[i-1])))
 		// done[i-1] = levIns[i] + done[i]
 		isDone[i-1] = api.Add(levIns[i], isDone[i])
 	}
 	// levIns[0] <== (1-done[0]);
 	levIns[0] = api.Sub(1, isDone[0])
-
 	return levIns
 }
 
@@ -179,7 +170,7 @@ func smtVerifierLevel(api frontend.API, stTop, stIold, stInew, sibling,
 	// component proofHash = SMTHash2();
 	// proofHash.L <== switcher.outL;
 	// proofHash.R <== switcher.outR;
-	proofHash := intermediateLeafValue(api, l, r)
+	proofHash := mimcIntermediateLeafValue(api, l, r)
 	// aux[0] <== proofHash.out * st_top;
 	aux0 := api.Mul(proofHash, stTop)
 	// aux[1] <== old1leaf * st_iold;
