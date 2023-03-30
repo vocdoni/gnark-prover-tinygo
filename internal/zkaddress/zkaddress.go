@@ -1,10 +1,10 @@
 package zkaddress
 
 import (
+	"gnark-prover-tinygo/internal/arbo"
 	"math/big"
 
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards"
-	"github.com/iden3/go-iden3-crypto/poseidon"
 )
 
 const DefaultZkAddressLen = 20
@@ -16,42 +16,33 @@ type ZkAddress struct {
 }
 
 func (zkAddr *ZkAddress) ArboBytes() []byte {
-	bScalar := zkAddr.Scalar.Bytes()
-	// swap endianess
-	for i, j := 0, len(bScalar)-1; i < j; i, j = i+1, j-1 {
-		bScalar[i], bScalar[j] = bScalar[j], bScalar[i]
-	}
-	// truncate to default length and return
-	res := make([]byte, DefaultZkAddressLen)
-	copy(res[:], bScalar)
-	return res[:]
+	return arbo.BigIntToBytes(DefaultZkAddressLen, zkAddr.Scalar)
 }
 
 func FromBytes(seed []byte) (*ZkAddress, error) {
 	// Setup the curve
 	c := twistededwards.GetEdwardsCurve()
 	// Get scalar private key hashing the seed with Poseidon hash
-	private, err := poseidon.HashBytes(seed)
+	var hash arbo.HashMiMC
+	bPrivate, err := hash.Hash(seed)
 	if err != nil {
 		return nil, err
 	}
+	private := arbo.BytesToBigInt(bPrivate)
 	// Get the point of the curve that represents the public key multipliying
 	// the private key scalar by the base of the curve
 	point := new(twistededwards.PointAffine).ScalarMultiplication(&c.Base, private)
 	// Get the single scalar that represents the publick key hashing X, Y point
 	// coordenates with Poseidon hash
-	bX, bY := new(big.Int), new(big.Int)
-	bX = point.X.BigInt(bX)
-	bY = point.Y.BigInt(bY)
-	public, err := poseidon.Hash([]*big.Int{bX, bY})
+	bX := arbo.BigIntToBytes(arbo.HashFunctionMiMC.Len(), point.X.BigInt(new(big.Int)))
+	bY := arbo.BigIntToBytes(arbo.HashFunctionMiMC.Len(), point.Y.BigInt(new(big.Int)))
+	publicBytes, err := hash.Hash(bX, bY)
 	if err != nil {
 		return nil, err
 	}
 
 	// truncate the most significant n bytes of the public key (little endian)
 	// where n is the default ZkAddress length
-	publicBytes := public.Bytes()
-	m := len(publicBytes) - DefaultZkAddressLen
-	scalar := new(big.Int).SetBytes(publicBytes[m:])
-	return &ZkAddress{private, public, scalar}, nil
+	scalar := arbo.BytesToBigInt(publicBytes[:DefaultZkAddressLen])
+	return &ZkAddress{private, arbo.BytesToBigInt(publicBytes), scalar}, nil
 }
