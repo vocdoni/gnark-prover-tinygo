@@ -1,5 +1,7 @@
 # Gnark prover using TinyGo
 
+_**This version uses MiMC7 hashing algorithm instead Poseidon.**_
+
 > ⚠️🚧 This repository is currently a **proof of concept**. 🚧⚠️
 
 This is an attempt to create an experimental zksnark prover/verifier for gnark circuits, compatible with [TinyGo](https://github.com/tinygo-org/tinygo), which means that it could be used on a bunch variety of targets (e.g. browsers).
@@ -24,7 +26,7 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
       plonk/        -> Plonk zk-snark backend version
     zkaddress/      -> Alternative implementation of current vocdoni zkaddress (https://github.com/vocdoni/vocdoni-node/blob/master/crypto/zk/address.go)
   std/              -> Extended gnark std version with required ports.
-    hash/poseidon/  -> Port to gnark of https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom
+    hash/poseidon/  -> [deleted] Port to gnark of https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom
     smt/            -> Port to gnark of https://github.com/iden3/circomlib/blob/master/circuits/smt/smtverifier.circom
     zkaddress/      -> Implementation of the zkaddress using gnark
   wasm/             -> Wasm entrypoint and compiled version.
@@ -35,7 +37,7 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 ### Followed stepts
 
 1. Ports from Gnark of required Circom circuits:
-    - `Poseidon hash`: [Gnark](./std/hash/poseidon/poseidon.go) | [Circom](https://github.com/iden3/circomlib/blob/db0202410771a3e3fc07c64c5226b64f954b8b5a/circuits/poseidon.circom).
+    - [Deleted] `Poseidon hash`: [Gnark](./std/hash/poseidon/poseidon.go) | [Circom](https://github.com/iden3/circomlib/blob/db0202410771a3e3fc07c64c5226b64f954b8b5a/circuits/poseidon.circom).
     - `SMTVerifier`: [Gnark](./std/smt/verifier.go) | [Circom](https://github.com/iden3/circomlib/blob/a8cdb6cd1ad652cca1a409da053ec98f19de6c9d/circuits/smt/smtverifier.circom).
 2. `ZkCensus` Vocdoni circuit port to Gnark: [Gnark](./circuits/zkcensus/zkcensus.go) | [Circom](https://github.com/vocdoni/zk-franchise-proof-circuit/blob/c2ead7f8502cf0dd7495140aec32599fd0a53199/circuit/census.circom).
 4. `ZkCensus` (Gnark version) compiler and artifacts enconder command implementation.
@@ -88,7 +90,7 @@ Term descriptions:
                                                                                   |
                                       +-----------+                               |
                           +----+      |           +<------------------------------+
-  PUB_nullifier+--------->+ == +<-----+ Poseidon  |<------------+PUB_processID_0
+  PUB_nullifier+--------->+ == +<-----+ MiMC      |<------------+PUB_processID_0
                           +----+      |           +<------------+PUB_processID_1
                                       +-----------+
   PUB_voteHash
@@ -127,13 +129,29 @@ Term descriptions:
 
 ### Results
 
+The resulting circuit got:
+ - Groth16: 117474 constrains
+ - Plonk: 161499 constrains
+
+#### Native
+| Snark Backend | Browser thread | Test result | Errors |
+|:---:|:---:|:---:|:---:|
+| Groth16 | main thread | ≈ 9.2s | ✅ |
+| Plonk | main thread | ≈ 6.8s | ✅ |
+
+```
+Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
+```
+
+#### Browser
+
 | Compiler | Snark Backend | Browser thread | Test result | Errors |
 |:---:|:---:|:---:|:---:|:---:|
-| Go (native) | Groth16 | main thread | ≈ 210s | ✅ |
-| Go (native) | Plonk | main thread | ≈ 208s | ✅ |
-| Go (native) | Groth16 | worker thread | ≈ 262s | ✅ |
-| Go (native) | Plonk | worker thread | ≈ 211s | ✅ |
-| TinyGo (dev) | Groth16 | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-| TinyGo (dev) | Plonk | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-| TinyGo (dev) | Groth16 | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-| TinyGo (dev) | Plonk | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
+| Go (native) | Groth16 | main thread | ≈ 544.9s | ✅ |
+| Go (native) | Groth16 | worker thread | ≈ 574.4s | ✅ |
+| Go (native) | Plonk | main thread | ≈ 373.4s | ✅ |
+| Go (native) | Plonk | worker thread | ≈ 376.9s | ✅ |
+
+```
+Google Chrome Versión 111.0.5563.146 (Build oficial) (arm64)
+```

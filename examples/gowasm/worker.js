@@ -1,4 +1,4 @@
-importScripts('https://cdn.jsdelivr.net/gh/golang/go@go1.18.4/misc/wasm/wasm_exec.js')
+importScripts('/wasm_exec.js')
 
 addEventListener('message', async(e) => {
     let start = Date.now();
