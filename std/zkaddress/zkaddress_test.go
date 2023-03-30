@@ -11,19 +11,26 @@ import (
 )
 
 type testZkAddressCiruit struct {
-	PrivateKey frontend.Variable
-	PublicKey  frontend.Variable `gnark:",public"`
-	Scalar     frontend.Variable `gnark:",public"`
+	Private frontend.Variable
+	Public  frontend.Variable `gnark:",public"`
+	Scalar  frontend.Variable `gnark:",public"`
 }
 
 func (circuit *testZkAddressCiruit) Define(api frontend.API) error {
-	zkAddress, err := FromPrivate(api, circuit.PrivateKey)
+	zkAddress, err := FromPrivate(api, circuit.Private)
 	if err != nil {
 		return err
 	}
 
-	api.AssertIsEqual(circuit.PrivateKey, zkAddress.Private)
-	api.AssertIsEqual(circuit.PublicKey, zkAddress.Public)
+	api.Println("zkAddress", zkAddress.Private)
+	api.Println("zkAddress", zkAddress.Public)
+	api.Println("zkAddress", zkAddress.Scalar)
+	api.Println("circuit", circuit.Private)
+	api.Println("circuit", circuit.Public)
+	api.Println("circuit", circuit.Scalar)
+
+	api.AssertIsEqual(circuit.Private, zkAddress.Private)
+	api.AssertIsEqual(circuit.Public, zkAddress.Public)
 	api.AssertIsEqual(circuit.Scalar, zkAddress.Scalar)
 	return nil
 }
@@ -38,9 +45,9 @@ func TestZkAddress(t *testing.T) {
 	}
 
 	assignment := testZkAddressCiruit{
-		PublicKey:  zkAddr.Public,
-		PrivateKey: zkAddr.Private,
-		Scalar:     zkAddr.Scalar,
+		Public:  zkAddr.Public,
+		Private: zkAddr.Private,
+		Scalar:  zkAddr.Scalar,
 	}
 
 	var circuit testZkAddressCiruit

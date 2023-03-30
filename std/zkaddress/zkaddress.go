@@ -1,11 +1,10 @@
 package zkaddress
 
 import (
-	"gnark-prover-tinygo/std/hash/poseidon"
-
 	ecc "github.com/consensys/gnark-crypto/ecc/twistededwards"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/algebra/native/twistededwards"
+	"github.com/consensys/gnark/std/hash/mimc"
 )
 
 const DefaultZkAddressLen = 20
@@ -27,7 +26,14 @@ func FromPrivate(api frontend.API, private frontend.Variable) (ZkAddress, error)
 		Y: curve.Params().Base[1],
 	}
 	point := curve.ScalarMul(base, private)
-	public := poseidon.Hash(api, point.X, point.Y)
+
+	// public := poseidon.Hash(api, point.X, point.Y)
+	h, err := mimc.NewMiMC(api)
+	if err != nil {
+		return ZkAddress{}, err
+	}
+	h.Write(point.X, point.Y)
+	public := h.Sum()
 
 	bPublic := api.ToBinary(public, api.Compiler().FieldBitLen())
 	scalar := api.FromBinary(bPublic[:DefaultZkAddressLen*8]...)
