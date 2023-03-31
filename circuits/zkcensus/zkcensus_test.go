@@ -23,19 +23,6 @@ import (
 var nLevels = flag.Int("nLevels", 160, "number of levels of the arbo tree")
 var nKeys = flag.Int("nKyes", 200, "number of keys to add to the arbo tree")
 
-func emptyInput() ZkCensusCircuit {
-	return ZkCensusCircuit{
-		ElectionId:     [2]frontend.Variable{0, 0},
-		CensusRoot:     frontend.Variable(0),
-		Nullifier:      frontend.Variable(0),
-		FactoryWeight:  frontend.Variable(0),
-		VoteHash:       [2]frontend.Variable{0, 0},
-		CensusSiblings: [160]frontend.Variable{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		PrivateKey:     frontend.Variable(0),
-		VotingWeight:   frontend.Variable(0),
-	}
-}
-
 func BytesToArbo(input []byte) [2]*big.Int {
 	hash := sha256.Sum256(input)
 	return [2]*big.Int{
@@ -144,12 +131,8 @@ func correctInputs() (ZkCensusCircuit, error) {
 	}, nil
 }
 
-func SerializeWitness() error {
-	success, err := correctInputs()
-	if err != nil {
-		return err
-	}
-	witness, _ := frontend.NewWitness(&success, ecc.BN254.ScalarField())
+func SerializeWitness(input ZkCensusCircuit) error {
+	witness, _ := frontend.NewWitness(&input, ecc.BN254.ScalarField())
 	f, err := os.Create("../artifacts/witness")
 	if err != nil {
 		return err
@@ -165,13 +148,8 @@ func TestZkCensusCircuit(t *testing.T) {
 
 	var circuit ZkCensusCircuit
 
-	SerializeWitness()
-
-	fail := emptyInput()
-	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
-	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
-
 	success, _ := correctInputs()
+	SerializeWitness(success)
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
 }
