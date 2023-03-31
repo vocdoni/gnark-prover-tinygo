@@ -7,6 +7,7 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
 	"github.com/consensys/gnark/constraint"
+	cs "github.com/consensys/gnark/constraint/bn254"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/r1cs"
 	"github.com/consensys/gnark/test"
@@ -41,6 +42,7 @@ func saveGroth16(ccs constraint.ConstraintSystem, srs kzg.SRS, ccsDst, srsDst st
 		return err
 	}
 	defer fdCCS.Close()
-	_, err = ccs.WriteTo(fdCCS)
+	_r1cs := ccs.(*cs.R1CS)
+	_, err = _r1cs.WriteTo(fdCCS)
 	return err
 }
