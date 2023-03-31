@@ -24,6 +24,7 @@
             generateProof(ccs, srs, witness);
             let end = Date.now();
             let elapsed = end - start;
+            console.log(`[${test.desc}] finished, took ${elapsed/1000}s`);
         }
 
         const tests = [{

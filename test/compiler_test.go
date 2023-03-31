@@ -43,7 +43,8 @@ func saveGroth16(ccs constraint.ConstraintSystem, srs kzg.SRS, ccsDst, srsDst st
 		return err
 	}
 	defer fdCCS.Close()
-	_, err = ccs.WriteTo(fdCCS)
+	_r1cs := ccs.(*cs.R1CS)
+	_, err = _r1cs.WriteTo(fdCCS)
 	return err
 }
 
