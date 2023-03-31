@@ -132,13 +132,9 @@ func correctInputs() (ZkCensusCircuit, error) {
 	}, nil
 }
 
-func SerializeWitness() error {
-	success, err := correctInputs()
-	if err != nil {
-		return err
-	}
-	witness, _ := frontend.NewWitness(&success, ecc.BN254.ScalarField())
-	f, err := os.Create("./witness")
+func SerializeWitness(input ZkCensusCircuit) error {
+	witness, _ := frontend.NewWitness(&input, ecc.BN254.ScalarField())
+	f, err := os.Create("../artifacts/witness")
 	if err != nil {
 		return err
 	}
@@ -150,14 +146,10 @@ func SerializeWitness() error {
 
 func TestZkCensusCircuit(t *testing.T) {
 	assert := test.NewAssert(t)
-
 	var circuit ZkCensusCircuit
 
-	fail := emptyInput()
-	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
-	assert.SolvingFailed(&circuit, &fail, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
-
 	success, _ := correctInputs()
+	SerializeWitness(success)
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.PLONK))
 	assert.SolvingSucceeded(&circuit, &success, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16))
 }

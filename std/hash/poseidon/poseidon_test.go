@@ -17,8 +17,8 @@ type testPoseidonCiruit struct {
 }
 
 func (circuit *testPoseidonCiruit) Define(api frontend.API) error {
-	hash := Hash(api, circuit.Data)
-	api.AssertIsEqual(hash, circuit.Hash)
+	h := Hash(api, circuit.Data)
+	api.AssertIsEqual(h, circuit.Hash)
 	return nil
 }
 
