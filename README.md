@@ -127,6 +127,18 @@ Term descriptions:
 
 ### Results
 
+#### Native
+| Snark Backend | Browser thread | Test result | Errors |
+|:---:|:---:|:---:|:---:|
+| Groth16 | main thread | ≈ 3.689s | ✅ |
+| Plonk | main thread | ≈ 3.136s | ✅ |
+
+```
+Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
+```
+
+#### Browser
+
 | Compiler | Snark Backend | Browser thread | Test result | Errors |
 |:---:|:---:|:---:|:---:|:---:|
 | Go (native) | Groth16 | main thread | ≈ 210s | ✅ |
@@ -137,3 +149,7 @@ Term descriptions:
 | TinyGo (dev) | Plonk | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Groth16 | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Plonk | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
+
+```
+Google Chrome Versión 111.0.5563.146 (Build oficial) (arm64)
+```
