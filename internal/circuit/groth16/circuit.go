@@ -3,6 +3,7 @@ package groth16
 import (
 	"bytes"
 	"fmt"
+	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
@@ -20,11 +21,14 @@ import (
 // returns the verification key, the proof and the public witness, all of this
 // outputs will be encoded as JSON. If something fails, it returns an error.
 func GenerateProof(bccs, bsrs, inputs []byte) ([]byte, []byte, []byte, error) {
+	step := time.Now()
 	// Read and initialize circuit CS
 	ccs := groth16.NewCS(ecc.BN254)
 	if _, err := ccs.ReadFrom(bytes.NewReader(bccs)); err != nil {
 		return nil, nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
+	fmt.Println("ccs loaded, took (s):", time.Since(step))
+	step = time.Now()
 	// Read and initialize the witness
 	cWitness, err := witness.New(ecc.BN254.ScalarField())
 	if err != nil {
@@ -33,17 +37,21 @@ func GenerateProof(bccs, bsrs, inputs []byte) ([]byte, []byte, []byte, error) {
 	if _, err := cWitness.ReadFrom(bytes.NewReader(inputs)); err != nil {
 		return nil, nil, nil, fmt.Errorf("error reading witness: %w", err)
 	}
+	fmt.Println("witness loaded, took (s):", time.Since(step))
+	step = time.Now()
 	// Get proving and verifiying keys
 	provingKey, verifyingKey, err := groth16.Setup(ccs)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("error generating plonk keys: %w", err)
 	}
-
+	fmt.Println("setup initialized, took (s):", time.Since(step))
+	step = time.Now()
 	// Generate the proof
 	proof, err := groth16.Prove(ccs, provingKey, cWitness)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("error generating proof: %w", err)
 	}
+	fmt.Println("proof generated, took (s):", time.Since(step))
 	proofBuff := bytes.Buffer{}
 	if _, err := proof.WriteTo(&proofBuff); err != nil {
 		return nil, nil, nil, fmt.Errorf("error encoding proof: %w", err)
