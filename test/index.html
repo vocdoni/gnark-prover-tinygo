@@ -1,0 +1,58 @@
+<script src="./wasm_exec.js"></script>
+<script>
+    (async() => {
+        async function runTest(test) {
+            let start = Date.now();
+            const go = new Go();
+
+            let wasmModule = await WebAssembly.instantiateStreaming(fetch(test.prover), go.importObject);
+            go.run(wasmModule.instance);
+
+            let resCCS = await fetch(test.ccs);
+            let ccsBuff = await resCCS.arrayBuffer();
+            let ccs = new Uint8Array(ccsBuff);
+
+            let resSRS = await fetch(test.srs);
+            let srsBuff = await resSRS.arrayBuffer();
+            let srs = new Uint8Array(srsBuff);
+
+            let resWitness = await fetch(test.witness);
+            let witnessBuff = await resWitness.arrayBuffer();
+            let witness = new Uint8Array(witnessBuff);
+
+            console.log(`[${test.desc}] generating proof...`);
+            generateProof(ccs, srs, witness);
+            let end = Date.now();
+            let elapsed = end - start;
+        }
+
+        const tests = [{
+            desc: "poseidon groth16",
+            prover: "/artifacts/groth16-circuit.wasm",
+            ccs: "/artifacts/poseidon_groth16.ccs",
+            srs: "/artifacts/poseidon_groth16.srs",
+            witness: "/artifacts/witness_poseidon",
+        }, {
+            desc: "poseidon plonk",
+            prover: "/artifacts/plonk-circuit.wasm",
+            ccs: "/artifacts/poseidon_plonk.ccs",
+            srs: "/artifacts/poseidon_plonk.srs",
+            witness: "/artifacts/witness_poseidon",
+        }, {
+            desc: "mimc groth16",
+            prover: "/artifacts/groth16-circuit.wasm",
+            ccs: "/artifacts/mimc_groth16.ccs",
+            srs: "/artifacts/mimc_groth16.srs",
+            witness: "/artifacts/witness_mimc",
+        }, {
+            desc: "mimc plonk",
+            prover: "/artifacts/plonk-circuit.wasm",
+            ccs: "/artifacts/mimc_plonk.ccs",
+            srs: "/artifacts/mimc_plonk.srs",
+            witness: "/artifacts/witness_mimc",
+        }, ];
+
+
+        tests.forEach(async test => await runTest(test));
+    })();
+</script>
