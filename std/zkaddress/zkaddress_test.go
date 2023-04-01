@@ -22,13 +22,6 @@ func (circuit *testZkAddressCiruit) Define(api frontend.API) error {
 		return err
 	}
 
-	api.Println("zkAddress", zkAddress.Private)
-	api.Println("zkAddress", zkAddress.Public)
-	api.Println("zkAddress", zkAddress.Scalar)
-	api.Println("circuit", circuit.Private)
-	api.Println("circuit", circuit.Public)
-	api.Println("circuit", circuit.Scalar)
-
 	api.AssertIsEqual(circuit.Private, zkAddress.Private)
 	api.AssertIsEqual(circuit.Public, zkAddress.Public)
 	api.AssertIsEqual(circuit.Scalar, zkAddress.Scalar)
