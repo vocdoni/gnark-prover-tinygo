@@ -23,8 +23,8 @@ It uses the MiMC implementation of ConsenSys ([source code](https://github.com/C
 |:---|:---:|---:|---:|
 | Go | Groth16 | 1.260s | 0.327s |
 | Go | Plonk | 0.295s | 0.227s |
-| Browser | Groth16 | 533.09s | 211.773s |
-| Browser | Plonk | 369.1136s | 192.981s |
+| Browser | Groth16 | 235.82s | 86.56s |
+| Browser | Plonk | 268.57s | 139.87s |
 
 ```
 Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
