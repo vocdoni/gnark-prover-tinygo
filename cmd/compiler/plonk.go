@@ -6,6 +6,7 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
+	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/constraint"
 	cs "github.com/consensys/gnark/constraint/bn254"
 	"github.com/consensys/gnark/frontend"
@@ -13,21 +14,27 @@ import (
 	"github.com/consensys/gnark/test"
 )
 
-func compilePlonk() (constraint.ConstraintSystem, kzg.SRS, error) {
+func compilePlonk() (constraint.ConstraintSystem, kzg.SRS, plonk.ProvingKey, plonk.VerifyingKey, error) {
 	var c zkcensus.ZkCensusCircuit
 	ccs, err := frontend.Compile(ecc.BN254.ScalarField(), scs.NewBuilder, &c)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	srs, err := test.NewKZGSRS(ccs)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, nil, err
 	}
-	return ccs, srs, nil
+
+	provingKey, verifyingKey, err := plonk.Setup(ccs, srs)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	return ccs, srs, provingKey, verifyingKey, nil
 }
 
-func savePlonk(ccs constraint.ConstraintSystem, srs kzg.SRS, ccsDst, srsDst string) error {
+func savePlonk(ccs constraint.ConstraintSystem, srs kzg.SRS, provingKey plonk.ProvingKey, verifyingKey plonk.VerifyingKey, ccsDst, srsDst, pKeyDst, vKeyDst string) error {
 	fdSRS, err := os.Create(srsDst)
 	if err != nil {
 		return err
@@ -44,6 +51,27 @@ func savePlonk(ccs constraint.ConstraintSystem, srs kzg.SRS, ccsDst, srsDst stri
 	defer fdCCS.Close()
 
 	_scs := ccs.(*cs.SparseR1CS)
-	_, err = _scs.WriteTo(fdCCS)
-	return err
+	if _, err := _scs.WriteTo(fdCCS); err != nil {
+		return err
+	}
+
+	fdPKey, err := os.Create(pKeyDst)
+	if err != nil {
+		return err
+	}
+	defer fdPKey.Close()
+	if _, err := provingKey.WriteTo(fdPKey); err != nil {
+		return err
+	}
+
+	fdVKey, err := os.Create(vKeyDst)
+	if err != nil {
+		return err
+	}
+	defer fdVKey.Close()
+	if _, err := provingKey.WriteTo(fdVKey); err != nil {
+		return err
+	}
+
+	return nil
 }
