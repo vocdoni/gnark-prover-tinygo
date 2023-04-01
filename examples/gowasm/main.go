@@ -25,8 +25,8 @@ func main() {
 	http.Handle("/wasm/", http.StripPrefix("/wasm/", wasmFs))
 	http.Handle("/artifacts/", http.StripPrefix("/artifacts/", artifactsFs))
 
-	fmt.Println("Starting http server... Example url: http://localhost:8080/. Check the console!")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	fmt.Println("Starting http server... Example url: http://localhost:5050/. Check the console!")
+	if err := http.ListenAndServe(":5050", nil); err != nil {
 		fmt.Println(err)
 	}
 }

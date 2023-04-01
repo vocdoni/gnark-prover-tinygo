@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"gnark-prover-tinygo/internal/circuit/groth16"
 	"gnark-prover-tinygo/internal/circuit/plonk"
 	"log"
@@ -9,35 +8,34 @@ import (
 	"time"
 )
 
-var zkBackend = flag.String("backend", "groth16", "backend circuit ('groth16' or 'plonk')")
-
 func main() {
-	start := time.Now()
 	ccs, err := os.ReadFile("./artifacts/zkcensus.ccs")
 	if err != nil {
 		panic(err)
 	}
-	srs, err := os.ReadFile("./artifacts/zkcensus.srs")
+	srs, _ := os.ReadFile("./artifacts/zkcensus.srs")
+	pkey, err := os.ReadFile("./artifacts/zkcensus.pkey")
 	if err != nil {
 		panic(err)
 	}
-	witness, err := os.ReadFile("./artifacts/witness")
+	witness, err := os.ReadFile("./artifacts/zkcensus.witness")
 	if err != nil {
 		panic(err)
 	}
-	var vk, proof, pubWitness []byte
-	switch *zkBackend {
-	case "plonk":
-		vk, proof, pubWitness, err = plonk.GenerateProof(ccs, srs, witness)
-		if err != nil {
-			panic(err)
-		}
-	case "groth16":
-		vk, proof, pubWitness, err = groth16.GenerateProof(ccs, srs, witness)
-		if err != nil {
-			panic(err)
-		}
+
+	start := time.Now()
+	proof, pubWitness, err := plonk.GenerateProof(ccs, srs, pkey, witness)
+	if err == nil {
+		log.Println(proof, pubWitness)
+		log.Println("Took", time.Since(start))
+		return
 	}
-	log.Println(vk, proof, pubWitness)
+
+	start = time.Now()
+	proof, pubWitness, err = groth16.GenerateProof(ccs, pkey, witness)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(proof, pubWitness)
 	log.Println("Took", time.Since(start))
 }
