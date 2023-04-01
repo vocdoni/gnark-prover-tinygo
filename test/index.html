@@ -2,6 +2,7 @@
 <script>
     (async() => {
         async function runTest(test) {
+            console.log("running test:", test);
             let start = Date.now();
             const go = new Go();
 
@@ -12,16 +13,23 @@
             let ccsBuff = await resCCS.arrayBuffer();
             let ccs = new Uint8Array(ccsBuff);
 
-            let resSRS = await fetch(test.srs);
-            let srsBuff = await resSRS.arrayBuffer();
-            let srs = new Uint8Array(srsBuff);
+            let srs = new Uint8Array();
+            if (test.srs) {
+                let resSRS = await fetch(test.srs);
+                let srsBuff = await resSRS.arrayBuffer();
+                srs = new Uint8Array(srsBuff);
+            }
+
+            let resPKey = await fetch(test.pkey);
+            let pkeyBuff = await resPKey.arrayBuffer();
+            let pkey = new Uint8Array(pkeyBuff);
 
             let resWitness = await fetch(test.witness);
             let witnessBuff = await resWitness.arrayBuffer();
             let witness = new Uint8Array(witnessBuff);
 
             console.log(`[${test.desc}] generating proof...`);
-            generateProof(ccs, srs, witness);
+            generateProof(ccs, srs, pkey, witness);
             let end = Date.now();
             let elapsed = end - start;
             console.log(`[${test.desc}] finished, took ${elapsed/1000}s`);
@@ -31,29 +39,35 @@
             desc: "poseidon groth16",
             prover: "/artifacts/groth16-circuit.wasm",
             ccs: "/artifacts/poseidon_groth16.ccs",
-            srs: "/artifacts/poseidon_groth16.srs",
+            srs: null,
+            pkey: "/artifacts/poseidon_groth16.pkey",
             witness: "/artifacts/witness_poseidon",
         }, {
             desc: "poseidon plonk",
             prover: "/artifacts/plonk-circuit.wasm",
             ccs: "/artifacts/poseidon_plonk.ccs",
             srs: "/artifacts/poseidon_plonk.srs",
+            pkey: "/artifacts/poseidon_plonk.pkey",
             witness: "/artifacts/witness_poseidon",
         }, {
             desc: "mimc groth16",
             prover: "/artifacts/groth16-circuit.wasm",
             ccs: "/artifacts/mimc_groth16.ccs",
-            srs: "/artifacts/mimc_groth16.srs",
+            srs: null,
+            pkey: "/artifacts/mimc_groth16.pkey",
             witness: "/artifacts/witness_mimc",
         }, {
             desc: "mimc plonk",
             prover: "/artifacts/plonk-circuit.wasm",
             ccs: "/artifacts/mimc_plonk.ccs",
             srs: "/artifacts/mimc_plonk.srs",
+            pkey: "/artifacts/mimc_plonk.pkey",
             witness: "/artifacts/witness_mimc",
         }, ];
 
 
-        tests.forEach(async test => await runTest(test));
+        for (let i = 0; i < tests.length; i++) {
+            await runTest(tests[i]);
+        }
     })();
 </script>
