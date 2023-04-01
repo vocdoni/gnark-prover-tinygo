@@ -128,10 +128,10 @@ Term descriptions:
 ### Results
 
 #### Native
-| Snark Backend | Browser thread | Test result | Errors |
-|:---:|:---:|:---:|:---:|
-| Groth16 | main thread | ≈ 3.689s | ✅ |
-| Plonk | main thread | ≈ 3.136s | ✅ |
+| Snark Backend | Test result | Errors |
+|:---:|:---:|:---:|
+| Groth16 | ≈ 1.596s | ✅ |
+| Plonk | ≈ 2.181s | ✅ |
 
 ```
 Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
@@ -141,10 +141,10 @@ Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
 
 | Compiler | Snark Backend | Browser thread | Test result | Errors |
 |:---:|:---:|:---:|:---:|:---:|
-| Go (native) | Groth16 | main thread | ≈ 210s | ✅ |
-| Go (native) | Plonk | main thread | ≈ 208s | ✅ |
-| Go (native) | Groth16 | worker thread | ≈ 262s | ✅ |
-| Go (native) | Plonk | worker thread | ≈ 211s | ✅ |
+| Go (native) | Groth16 | main thread | ≈ 109.2s | ✅ |
+| Go (native) | Plonk | main thread | ≈ 138.8s | ✅ |
+| Go (native) | Groth16 | worker thread | ≈ 108.2s | ✅ |
+| Go (native) | Plonk | worker thread | ≈ 138.1s | ✅ |
 | TinyGo (dev) | Groth16 | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Plonk | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Groth16 | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
