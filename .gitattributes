@@ -2,3 +2,5 @@
 *.srs filter=lfs diff=lfs merge=lfs -text
 *.wasm filter=lfs diff=lfs merge=lfs -text
 *.witness filter=lfs diff=lfs merge=lfs -text
+*.pkey filter=lfs diff=lfs merge=lfs -text
+*.vkey filter=lfs diff=lfs merge=lfs -text
