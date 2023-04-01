@@ -134,10 +134,10 @@ The resulting circuit got:
  - Plonk: 161499 constrains
 
 #### Native
-| Snark Backend | Browser thread | Test result | Errors |
-|:---:|:---:|:---:|:---:|
-| Groth16 | main thread | ≈ 9.2s | ✅ |
-| Plonk | main thread | ≈ 6.8s | ✅ |
+| Snark Backend | Test result | Errors |
+|:---:|:---:|:---:|
+| Groth16 | ≈ 3.34s | ✅ |
+| Plonk | ≈ 5.44s | ✅ |
 
 ```
 Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
@@ -147,10 +147,10 @@ Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
 
 | Compiler | Snark Backend | Browser thread | Test result | Errors |
 |:---:|:---:|:---:|:---:|:---:|
-| Go (native) | Groth16 | main thread | ≈ 544.9s | ✅ |
-| Go (native) | Groth16 | worker thread | ≈ 574.4s | ✅ |
-| Go (native) | Plonk | main thread | ≈ 373.4s | ✅ |
-| Go (native) | Plonk | worker thread | ≈ 376.9s | ✅ |
+| Go (native) | Groth16 | main thread | ≈ 249.3s | ✅ |
+| Go (native) | Groth16 | worker thread | ≈ 249.8s | ✅ |
+| Go (native) | Plonk | main thread | ≈ 273.34s | ✅ |
+| Go (native) | Plonk | worker thread | ≈ 274.59s | ✅ |
 
 ```
 Google Chrome Versión 111.0.5563.146 (Build oficial) (arm64)
