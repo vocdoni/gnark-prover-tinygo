@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"
+	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/scs"
 	"github.com/consensys/gnark/test"
@@ -35,9 +36,14 @@ func TestEnd2EndCircuit(t *testing.T) {
 
 	srs, err := test.NewKZGSRS(ccs)
 	c.Assert(err, qt.IsNil)
-
-	srsBuff := bytes.Buffer{}
+	var srsBuff bytes.Buffer
 	_, err = srs.WriteTo(&srsBuff)
+	c.Assert(err, qt.IsNil)
+
+	provingKey, _, err := plonk.Setup(ccs, srs)
+	c.Assert(err, qt.IsNil)
+	var pkeyBuff bytes.Buffer
+	_, err = provingKey.WriteTo(&pkeyBuff)
 	c.Assert(err, qt.IsNil)
 
 	inputs := &testingCircuit{
@@ -52,9 +58,6 @@ func TestEnd2EndCircuit(t *testing.T) {
 	_, err = wtns.WriteTo(&wtnsBuff)
 	c.Assert(err, qt.IsNil)
 
-	vKey, proof, pubWitness, err := GenerateProof(ccsBuff.Bytes(), srsBuff.Bytes(), wtnsBuff.Bytes())
-	c.Assert(err, qt.IsNil)
-
-	err = VerifyProof(srsBuff.Bytes(), vKey, proof, pubWitness)
+	_, _, err = GenerateProof(ccsBuff.Bytes(), srsBuff.Bytes(), pkeyBuff.Bytes(), wtnsBuff.Bytes())
 	c.Assert(err, qt.IsNil)
 }
