@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"syscall/js"
 	"time"
 
 	"github.com/vocdoni/gnark-crypto-bn254/ecc"
@@ -21,8 +22,6 @@ import (
 // provided and generates the proof for the JSON encoded inputs (witness). It
 // returns the verification key, the proof and the public witness, all of this
 // outputs will be encoded as JSON. If something fails, it returns an error.
-//
-//export generateProof
 func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step := time.Now()
 	// Read and initialize circuit CS
@@ -84,4 +83,26 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	return proofBuff.Bytes(), publicWitnessBuff.Bytes(), nil
 }
 
-func main() {}
+func main() {
+	c := make(chan int)
+	js.Global().Set("generateProof", js.FuncOf(jsGenerateProof))
+	<-c
+}
+
+func jsGenerateProof(this js.Value, args []js.Value) interface{} {
+	// var bccs, bsrs, witness []byte
+	bccs := make([]byte, args[0].Get("length").Int())
+	bsrs := make([]byte, args[1].Get("length").Int())
+	bpkey := make([]byte, args[2].Get("length").Int())
+	bwitness := make([]byte, args[3].Get("length").Int())
+
+	js.CopyBytesToGo(bccs, args[0])
+	js.CopyBytesToGo(bsrs, args[1])
+	js.CopyBytesToGo(bpkey, args[2])
+	js.CopyBytesToGo(bwitness, args[3])
+
+	if _, _, err := GenerateProof(bccs, bsrs, bpkey, bwitness); err != nil {
+		return err
+	}
+	return nil
+}
