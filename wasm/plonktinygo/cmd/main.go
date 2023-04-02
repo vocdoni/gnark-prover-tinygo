@@ -4,19 +4,21 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
 	"github.com/vocdoni/gnark-crypto-bn254/ecc"
 	"github.com/vocdoni/gnark-crypto-bn254/kzg"
 	"github.com/vocdoni/gnark-wasm-prover/csbn254"
+	"github.com/vocdoni/gnark-wasm-prover/hints"
 	"github.com/vocdoni/gnark-wasm-prover/prover"
 	"github.com/vocdoni/gnark-wasm-prover/witness"
 	// This import fixes the issue that raises when a prover tries to generate a proof
 	// of a serialized circuit. Check more information here:
 	//   - https://github.com/ConsenSys/gnark/issues/600
 	//   - https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration
-	// _ "github.com/consensys/gnark/std/math/bits"
+	// "github.com/consensys/gnark/std/math/bits"
 )
 
 // GenerateProof sets up the circuit with the constrain system and the srs files
@@ -25,25 +27,25 @@ import (
 // outputs will be encoded as JSON. If something fails, it returns an error.
 //
 //export generateProof
-func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
+func GenerateProof(bccs, bsrs, bpkey, inputs io.Reader) ([]byte, []byte, error) {
 	step := time.Now()
 	// Read and initialize circuit CS
 	ccs := &csbn254.SparseR1CS{}
-	if _, err := ccs.ReadFrom(bytes.NewReader(bccs)); err != nil {
+	if _, err := ccs.ReadFrom(bccs); err != nil {
 		return nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
 	fmt.Println("ccs loaded, took (s):", time.Since(step))
 	step = time.Now()
 	// Read and initialize SSR
 	srs := kzg.NewSRS(ecc.BN254)
-	if _, err := srs.ReadFrom(bytes.NewReader(bsrs)); err != nil {
+	if _, err := srs.ReadFrom(bsrs); err != nil {
 		return nil, nil, err
 	}
 	fmt.Println("srs loaded, took (s):", time.Since(step))
 	step = time.Now()
 	// Read proving key
 	provingKey := &prover.ProvingKey{}
-	if _, err := provingKey.ReadFrom(bytes.NewReader(bpkey)); err != nil {
+	if _, err := provingKey.ReadFrom(bpkey); err != nil {
 		return nil, nil, fmt.Errorf("error reading circuit pkey: %w", err)
 	}
 	fmt.Println("pKey loaded, took (s):", time.Since(step))
@@ -59,11 +61,14 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("error initializing witness: %w", err)
 	}
-	if _, err := cWitness.ReadFrom(bytes.NewReader(inputs)); err != nil {
+	if _, err := cWitness.ReadFrom(inputs); err != nil {
 		return nil, nil, fmt.Errorf("error reading witness: %w", err)
 	}
 	fmt.Println("witness loaded, took (s):", time.Since(step))
 	step = time.Now()
+
+	hints.RegisterHints()
+
 	// Generate the proof
 	proof, err := prover.Prove(ccs, provingKey, cWitness)
 	if err != nil {
@@ -95,23 +100,36 @@ func main() {
 	flag.Parse()
 
 	// Read the files into byte slices and call the generateProof function
-	bccs, err := os.ReadFile(*fdcircuit)
+	fmt.Println("reading circuit file: ", *fdcircuit)
+	fccs, err := os.Open(*fdcircuit)
 	if err != nil {
 		panic(err)
 	}
-	bsrs, err := os.ReadFile(*fdsrs)
+	defer fccs.Close()
+
+	fmt.Println("reading srs file: ", *fdsrs)
+	fsrs, err := os.Open(*fdsrs)
 	if err != nil {
 		panic(err)
 	}
-	bpkey, err := os.ReadFile(*fdpkey)
+
+	defer fsrs.Close()
+	fmt.Println("reading proving key file: ", *fdpkey)
+	fpkey, err := os.Open(*fdpkey)
 	if err != nil {
 		panic(err)
 	}
-	bwitness, err := os.ReadFile(*fdwitness)
+	defer fpkey.Close()
+
+	fmt.Println("reading witness file: ", *fdwitness)
+	fwitness, err := os.Open(*fdwitness)
 	if err != nil {
 		panic(err)
 	}
-	proof, publicWitness, err := GenerateProof(bccs, bsrs, bpkey, bwitness)
+	defer fwitness.Close()
+
+	fmt.Println("calling generateProof function")
+	proof, publicWitness, err := GenerateProof(fccs, fsrs, fpkey, fwitness)
 	if err != nil {
 		panic(err)
 	}

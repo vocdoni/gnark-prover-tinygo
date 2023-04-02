@@ -8,7 +8,7 @@ require (
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
 	github.com/vocdoni/gnark-crypto-bn254 v0.10.1
-	github.com/vocdoni/gnark-wasm-prover v0.1.0
+	github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402183221-d2f875efaa9f
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
