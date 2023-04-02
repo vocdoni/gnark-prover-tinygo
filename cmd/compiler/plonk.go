@@ -75,7 +75,7 @@ func savePlonk(ccs constraint.ConstraintSystem, kzg *kzg.SRS, provingKey plonk.P
 	}
 	defer fdCCS.Close()
 	_scs := ccs.(*cs.SparseR1CS)
-	n, err = encoder.EncodeToGob(fdCCS, _scs)
+	n, err = encoder.Encode(fdCCS, _scs)
 	if err != nil {
 		return err
 	}

@@ -8,12 +8,11 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"
-
 	// This import fixes the issue that raises when a prover tries to generate a proof
 	// of a serialized circuit. Check more information here:
 	//   - https://github.com/ConsenSys/gnark/issues/600
 	//   - https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration
-	_ "github.com/consensys/gnark/std/math/bits"
+	// _ "github.com/consensys/gnark/std/math/bits"
 )
 
 // GenerateProof sets up the circuit with the constrain system and the srs files

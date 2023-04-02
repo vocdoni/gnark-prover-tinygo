@@ -8,11 +8,12 @@ require (
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
 	github.com/vocdoni/gnark-crypto-bn254 v0.10.1
-	github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402204021-b868b8783544
+	github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402223625-b9eeb89e2416
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
 require (
+	git.sr.ht/~sircmpwn/go-bare v0.0.0-20210406120253-ab86bc2846d9 // indirect
 	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.5.0 // indirect

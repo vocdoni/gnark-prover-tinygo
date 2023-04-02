@@ -1,3 +1,6 @@
+//go:build tinygo
+// +build tinygo
+
 package main
 
 import (
@@ -21,7 +24,7 @@ import (
 // provided and generates the proof for the JSON encoded inputs (witness). It
 // returns the verification key, the proof and the public witness, all of this
 // outputs will be encoded as JSON. If something fails, it returns an error.
-//
+
 //export generateProof
 func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step := time.Now()
@@ -84,4 +87,8 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	return proofBuff.Bytes(), publicWitnessBuff.Bytes(), nil
 }
 
-func main() {}
+func main() {
+	//c := make(chan int)
+	//js.Global().Set("generateProof", js.FuncOf(jsGenerateProof))
+	//<-c
+}

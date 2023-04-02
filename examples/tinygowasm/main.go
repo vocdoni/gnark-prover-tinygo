@@ -14,12 +14,15 @@ func main() {
 		return
 	}
 	examplePath := filepath.Dir(callerFile)
+	wasmPath := filepath.Join(examplePath, "../../wasm")
 	artifactsPath := filepath.Join(examplePath, "../../artifacts")
 
 	exampleFs := http.FileServer(http.Dir(examplePath))
+	wasmFs := http.FileServer(http.Dir(wasmPath))
 	artifactsFs := http.FileServer(http.Dir(artifactsPath))
 
 	http.Handle("/", exampleFs)
+	http.Handle("/wasm/", http.StripPrefix("/wasm/", wasmFs))
 	http.Handle("/artifacts/", http.StripPrefix("/artifacts/", artifactsFs))
 
 	fmt.Println("Starting http server... Example url: http://localhost:8080/. Check the console!")
