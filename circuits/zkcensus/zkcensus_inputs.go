@@ -6,6 +6,7 @@ import (
 	"gnark-prover-tinygo/internal/zkaddress"
 	"math/big"
 	"os"
+	"strings"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/iden3/go-iden3-crypto/poseidon"
@@ -109,4 +110,17 @@ func ZkCensusInputs(nLevels, nKeys int) (ZkCensusCircuit, error) {
 		PrivateKey:     candidate.Private,
 		VotingWeight:   big.NewInt(5),
 	}, nil
+}
+
+func (z *ZkCensusCircuit) String() string {
+	str := strings.Builder{}
+	str.WriteString(fmt.Sprintf("ElectionId: %x\n", z.ElectionId))
+	str.WriteString(fmt.Sprintf("CensusRoot: %x\n", z.CensusRoot))
+	str.WriteString(fmt.Sprintf("Nullifier: %x\n", z.Nullifier))
+	str.WriteString(fmt.Sprintf("FactoryWeight: %s\n", z.FactoryWeight))
+	str.WriteString(fmt.Sprintf("VoteHash: %x\n", z.VoteHash))
+	str.WriteString(fmt.Sprintf("Siblings: %x\n", z.CensusSiblings))
+	str.WriteString(fmt.Sprintf("PrivKey: %x\n", z.PrivateKey))
+	str.WriteString(fmt.Sprintf("VotingWeight: %s\n", z.VotingWeight))
+	return str.String()
 }
