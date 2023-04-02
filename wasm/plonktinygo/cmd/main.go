@@ -67,6 +67,7 @@ func GenerateProof(bccs, bsrs, bpkey, inputs io.Reader) ([]byte, []byte, error) 
 	fmt.Println("witness loaded, took (s):", time.Since(step))
 	step = time.Now()
 
+	// Register hints for the circuit
 	hints.RegisterHints()
 
 	// Generate the proof

@@ -432,6 +432,8 @@ github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402160146-31865427af98 h1:Jo4
 github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402160146-31865427af98/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
 github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402183221-d2f875efaa9f h1:R0RjN4saCgPUiNDPXpq7vwkjzXDYJ3tgO7zbvJMQB+c=
 github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402183221-d2f875efaa9f/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
+github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402204021-b868b8783544 h1:q24YxEDtZdzQgcANlk3z7+mKR+YS03MTj5Ka8u5OYlM=
+github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230402204021-b868b8783544/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
 github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=
