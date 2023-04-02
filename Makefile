@@ -12,7 +12,7 @@ compile-prover-tinygo-groth16:
 	wasm-opt -O examples/tinygowasm/circuit.wasm -o examples/tinygowasm/circuit.wasm --enable-bulk-memory
 
 compile-prover-tinygo-plonk:
-	tinygo build -no-debug -panic=trap -gc=leaking -target=wasm -o examples/tinygowasm/circuit.wasm wasm/plonk/main_tinygo.go
+	tinygo build -no-debug -panic=trap -gc=leaking -target=wasm -o examples/tinygowasm/circuit.wasm ./wasm/plonktinygo
 	wasm-opt -O examples/tinygowasm/circuit.wasm -o wasm/circuit.wasm --enable-bulk-memory
 
 # Gnark circuit compilation
