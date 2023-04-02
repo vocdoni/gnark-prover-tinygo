@@ -7,12 +7,15 @@ require (
 	github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
+	github.com/vocdoni/gnark-crypto-bn254 v0.10.1
+	github.com/vocdoni/gnark-wasm-prover v0.1.0
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
 require (
 	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bits-and-blooms/bitset v1.5.0 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cockroachdb/errors v1.8.9 // indirect
