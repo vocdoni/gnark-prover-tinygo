@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"gnark-prover-tinygo/circuits/zkcensus"
 	"log"
 	"os"
@@ -49,4 +50,5 @@ func main() {
 	if _, err := witness.WriteTo(fdWitness); err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("%s", input.String())
 }
