@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark-crypto/kzg"
-	"github.com/consensys/gnark/backend/plonk"
-	"github.com/consensys/gnark/backend/witness"
-
+	"github.com/vocdoni/gnark-crypto-bn254/ecc"
+	"github.com/vocdoni/gnark-crypto-bn254/kzg"
+	"github.com/vocdoni/gnark-wasm-prover/csbn254"
+	"github.com/vocdoni/gnark-wasm-prover/hints"
+	"github.com/vocdoni/gnark-wasm-prover/prover"
+	"github.com/vocdoni/gnark-wasm-prover/witness"
 	// This import fixes the issue that raises when a prover tries to generate a proof
 	// of a serialized circuit. Check more information here:
 	//   - https://github.com/ConsenSys/gnark/issues/600
 	//   - https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration
-	_ "github.com/consensys/gnark/std/math/bits"
+	// _ "github.com/consensys/gnark/std/math/bits"
 )
 
 // GenerateProof sets up the circuit with the constrain system and the srs files
@@ -24,7 +25,7 @@ import (
 func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step := time.Now()
 	// Read and initialize circuit CS
-	ccs := plonk.NewCS(ecc.BN254)
+	ccs := &csbn254.SparseR1CS{}
 	if _, err := ccs.ReadFrom(bytes.NewReader(bccs)); err != nil {
 		return nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
@@ -38,7 +39,7 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	fmt.Println("srs loaded, took (s):", time.Since(step))
 	step = time.Now()
 	// Read proving key
-	provingKey := plonk.NewProvingKey(ecc.BN254)
+	provingKey := &prover.ProvingKey{}
 	if _, err := provingKey.ReadFrom(bytes.NewReader(bpkey)); err != nil {
 		return nil, nil, fmt.Errorf("error reading circuit pkey: %w", err)
 	}
@@ -60,8 +61,12 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	}
 	fmt.Println("witness loaded, took (s):", time.Since(step))
 	step = time.Now()
+
+	// Register hints for the circuit
+	hints.RegisterHints()
+
 	// Generate the proof
-	proof, err := plonk.Prove(ccs, provingKey, cWitness)
+	proof, err := prover.Prove(ccs, provingKey, cWitness)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error generating proof: %w", err)
 	}

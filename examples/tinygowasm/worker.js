@@ -4,7 +4,7 @@ addEventListener('message', async(e) => {
     let start = Date.now();
     console.log("loading go env and wasm...");
     const go = new Go();
-    let wasmModule = await WebAssembly.instantiateStreaming(fetch("/wasm/circuit.wasm"), go.importObject);
+    let wasmModule = await WebAssembly.instantiateStreaming(fetch("./circuit.wasm"), go.importObject);
     go.run(wasmModule.instance);
 
     console.log("reading artifacts...");
