@@ -12,6 +12,7 @@ import (
 	"github.com/vocdoni/gnark-crypto-bn254/ecc"
 	"github.com/vocdoni/gnark-crypto-bn254/kzg"
 	"github.com/vocdoni/gnark-wasm-prover/csbn254"
+	"github.com/vocdoni/gnark-wasm-prover/hints"
 	"github.com/vocdoni/gnark-wasm-prover/prover"
 	"github.com/vocdoni/gnark-wasm-prover/witness"
 	// This import fixes the issue that raises when a prover tries to generate a proof
@@ -28,10 +29,12 @@ import (
 func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step := time.Now()
 	// Read and initialize circuit CS
+	fmt.Println("loading circuit...")
 	ccs := &csbn254.SparseR1CS{}
 	if _, err := ccs.ReadFrom(bytes.NewReader(bccs)); err != nil {
 		return nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
+	fmt.Printf("\n\nvar ccs = %#v\n\n", ccs)
 	fmt.Println("ccs loaded, took (s):", time.Since(step))
 	step = time.Now()
 	// Read and initialize SSR
@@ -64,6 +67,10 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	}
 	fmt.Println("witness loaded, took (s):", time.Since(step))
 	step = time.Now()
+
+	// Register hints
+	hints.RegisterHints()
+
 	// Generate the proof
 	proof, err := prover.Prove(ccs, provingKey, cWitness)
 	if err != nil {
@@ -103,7 +110,7 @@ func jsGenerateProof(this js.Value, args []js.Value) interface{} {
 	js.CopyBytesToGo(bsrs, args[1])
 	js.CopyBytesToGo(bpkey, args[2])
 	js.CopyBytesToGo(bwitness, args[3])
-
+	fmt.Println("Calling function GenerateProof")
 	if _, _, err := GenerateProof(bccs, bsrs, bpkey, bwitness); err != nil {
 		return err
 	}

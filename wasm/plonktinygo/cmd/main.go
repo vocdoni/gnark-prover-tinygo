@@ -35,6 +35,7 @@ func GenerateProof(bccs, bsrs, bpkey, inputs io.Reader) ([]byte, []byte, error) 
 		return nil, nil, fmt.Errorf("error reading circuit cs: %w", err)
 	}
 	fmt.Println("ccs loaded, took (s):", time.Since(step))
+	//fmt.Printf("\n\nvar ccs = %#v\n\n", ccs)
 	step = time.Now()
 	// Read and initialize SSR
 	srs := kzg.NewSRS(ecc.BN254)
