@@ -1,30 +1,44 @@
-# Prover wasm compilation
-compile-prover-go-groth16:
-	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o wasm/circuit.wasm wasm/groth16/main.go
-	wasm-opt -O wasm/circuit.wasm -o wasm/circuit.wasm --enable-bulk-memory
+compile-prover-go:
+	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o artifacts/prover.wasm wasm/main.go
+	wasm-opt -O artifacts/prover.wasm -o artifacts/prover.wasm --enable-bulk-memory
 
-compile-prover-go-plonk:
-	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o wasm/circuit.wasm wasm/plonk/main.go
-	wasm-opt -O wasm/circuit.wasm -o wasm/circuit.wasm --enable-bulk-memory
+compile-prover-tinygo:
+	tinygo build -target=wasm -o artifacts/prover.wasm wasm/main.go
+#	wasm-opt -O artifacts/circuit.wasm -o artifacts/circuit.wasm --enable-bulk-memory
 
-compile-prover-tinygo-groth16:
-	tinygo build -no-debug -panic=trap -gc=leaking -target=wasm -o examples/tinygowasm/circuit.wasm wasm/groth16/main_tinygo.go
-	wasm-opt -O examples/tinygowasm/circuit.wasm -o examples/tinygowasm/circuit.wasm --enable-bulk-memory
+compile-circuit:
+	@go run ./cmd/compiler
 
-compile-prover-tinygo-plonk:
-	tinygo build -target=wasm -o examples/tinygowasm/circuit.wasm wasm/plonktinygo/main.go
-#	wasm-opt -O examples/tinygowasm/circuit.wasm -o examples/tinygowasm/circuit.wasm --enable-bulk-memory
+run-go-web-example:
+	@echo "compilling circuit and genering artifacts"
+	@make compile-circuit
+	@echo "copying artifacts"
+	@cp ./artifacts/zkcensus.ccs ./wasm/zkcensus.ccs
+	@cp ./artifacts/zkcensus.srs ./wasm/zkcensus.srs
+	@cp ./artifacts/zkcensus.pkey ./wasm/zkcensus.pkey
+	@echo "compilling the prover for go-wasm"
+	@make compile-prover-go
+	@echo "removing copied artifacts"
+	@rm ./wasm/zkcensus.ccs
+	@rm ./wasm/zkcensus.srs
+	@rm ./wasm/zkcensus.pkey
+	@echo "copying compatible wasm_exec.js"
+	@cp ./artifacts/wasm_exec_go.js ./examples/web/wasm_exec.js
+	@go run examples/web/main.go
 
-# Gnark circuit compilation
-compile-circuit-groth16:
-	@go run ./cmd/compiler -backend groth16
-
-compile-circuit-plonk:
-	@go run ./cmd/compiler -backend plonk
-
-# Examples
-run-go-example:
-	@go run examples/gowasm/main.go
-
-run-tinygo-example:
-	@go run examples/tinygowasm/main.go
+run-tinygo-web-example:
+	@echo "compilling circuit and genering artifacts"
+	@make compile-circuit
+	@echo "copying artifacts"
+	@cp ./artifacts/zkcensus.ccs ./wasm/zkcensus.ccs
+	@cp ./artifacts/zkcensus.srs ./wasm/zkcensus.srs
+	@cp ./artifacts/zkcensus.pkey ./wasm/zkcensus.pkey
+	@echo "compilling the prover for tinygo"
+	@make compile-prover-tinygo
+	@echo "removing copied artifacts"
+	@rm ./wasm/zkcensus.ccs
+	@rm ./wasm/zkcensus.srs
+	@rm ./wasm/zkcensus.pkey
+	@echo "copying compatible wasm_exec.js"
+	@cp ./artifacts/wasm_exec_tinygo.js ./examples/web/wasm_exec.js
+	@go run examples/web/main.go

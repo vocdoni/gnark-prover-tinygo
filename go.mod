@@ -3,6 +3,8 @@ module gnark-prover-tinygo
 go 1.19
 
 // replace github.com/vocdoni/gnark-wasm-prover => /home/p4u/repos/vocdoni/gprover
+// replace github.com/vocdoni/gnark-wasm-prover => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-wasm-prover
+// replace github.com/vocdoni/gnark-crypto-bn254 => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-crypto-bn254
 
 require (
 	github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284
@@ -10,7 +12,7 @@ require (
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
 	github.com/vocdoni/gnark-crypto-bn254 v0.10.1
-	github.com/vocdoni/gnark-wasm-prover v0.1.2-0.20230403091636-e20602085d85
+	github.com/vocdoni/gnark-wasm-prover v0.1.2
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
