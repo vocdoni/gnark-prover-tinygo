@@ -110,7 +110,7 @@ Term descriptions:
   ```sh
   make run-{compiler}-web-example
   ```
-  Select the desired WebAssembly compiler (`go` or `tinygo`). It will compile the circuit to generate the artifacts and also compile the prover to webassembly.
+  Select the desired WebAssembly compiler (`go` or `tinygo` or `wasi` using `tinygo`). It will compile the circuit to generate the artifacts and also compile the prover to webassembly.
 
 
 #### Other commands
