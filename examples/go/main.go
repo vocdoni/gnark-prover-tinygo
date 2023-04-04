@@ -1,11 +1,11 @@
 package main
 
 import (
-	"gnark-prover-tinygo/internal/circuit/groth16"
-	"gnark-prover-tinygo/internal/circuit/plonk"
 	"log"
 	"os"
 	"time"
+
+	"gnark-prover-tinygo/prover"
 )
 
 func main() {
@@ -24,15 +24,7 @@ func main() {
 	}
 
 	start := time.Now()
-	proof, pubWitness, err := plonk.GenerateProof(ccs, srs, pkey, witness)
-	if err == nil {
-		log.Println(proof, pubWitness)
-		log.Println("Took", time.Since(start))
-		return
-	}
-
-	start = time.Now()
-	proof, pubWitness, err = groth16.GenerateProof(ccs, pkey, witness)
+	proof, pubWitness, err := prover.GenerateProof(ccs, srs, pkey, witness)
 	if err != nil {
 		panic(err)
 	}
