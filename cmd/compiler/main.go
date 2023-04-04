@@ -11,7 +11,6 @@ import (
 	"github.com/consensys/gnark/frontend"
 )
 
-var zkBackend = flag.String("backend", "groth16", "Backend used in the ZkSnark circuit ('groth16' or 'plonk')")
 var ccsOutput = flag.String("ccs", "./artifacts/zkcensus.ccs", "Output file to the encoded output Gnark Circuit Constrain System, result of circuit compilation")
 var srsOutput = flag.String("srs", "./artifacts/zkcensus.srs", "Output file to the encoded output Gnark KZG polynomial commitment, result of circuit compilation")
 var pKeyOutput = flag.String("pkey", "./artifacts/zkcensus.pkey", "Circuit proving key")
@@ -21,23 +20,12 @@ var witnessOutput = flag.String("witness", "./artifacts/zkcensus.witness", "Circ
 func main() {
 	flag.Parse()
 
-	switch *zkBackend {
-	case "plonk":
-		ccs, srs, pKey, vKey, err := compilePlonk()
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err := savePlonk(ccs, srs, pKey, vKey, *ccsOutput, *srsOutput, *pKeyOutput, *vKeyOutput); err != nil {
-			log.Fatal(err)
-		}
-	case "groth16":
-		ccs, pKey, vKey, err := compileGroth16()
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err := saveGroth16(ccs, pKey, vKey, *ccsOutput, *pKeyOutput, *vKeyOutput); err != nil {
-			log.Fatal(err)
-		}
+	ccs, srs, pKey, vKey, err := compilePlonk()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := savePlonk(ccs, srs, pKey, vKey, *ccsOutput, *srsOutput, *pKeyOutput, *vKeyOutput); err != nil {
+		log.Fatal(err)
 	}
 
 	input, _ := zkcensus.ZkCensusInputs(160, 100)
