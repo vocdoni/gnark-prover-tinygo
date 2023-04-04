@@ -7,7 +7,7 @@ This is an attempt to create an experimental zksnark prover/verifier for gnark c
 It implements the same use case as [this circuit](https://github.com/vocdoni/zk-franchise-proof-circuit), and it attempts to replace the [Circom](https://github.com/iden3/circom) + [SnarkJS](https://github.com/iden3/snarkjs) stack.
 
 ## Motivations
- - 🚀 Gnark is very fast.
+ - 🚀 [Gnark](https://github.com/ConsenSys/gnark) is very fast.
  - 💉 Supports unit testing and many modern backends and curves.
  - 🔗 [vocdoni-node](https://github.com/vocdoni/vocdoni-node) is currently writed enterily in Go, like Gnark, which will increase the maintainability of the source code.
 
