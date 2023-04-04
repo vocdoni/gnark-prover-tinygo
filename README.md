@@ -16,12 +16,11 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
   artifacts/        -> Includes generated artifacts for the implemented and compiled circuits.
   circuits/         -> Includes the available circuits definitions.
     zkcensus/       -> Port to gnark of https://github.com/vocdoni/zk-franchise-proof-circuit/blob/master/circuit/census.circom 
-  cmd/compiler/     -> Simple command to compile available circuits.
-  example/          -> Example of proof generation in js using gnark into a go-wasm.
+  cmd/
+    compiler/       -> Simple command to compile available circuits.
+    prover/         -> Simple command to test the prover with go.
+  examples/         -> Example of proof generation in js using gnark into a go-wasm.
   internal/
-    circuit/        -> Internal definition of GenerateProof and VerifyProof funcs definitions.
-      groth16/      -> Groth16 zk-snark backend version
-      plonk/        -> Plonk zk-snark backend version
     zkaddress/      -> Alternative implementation of current vocdoni zkaddress (https://github.com/vocdoni/vocdoni-node/blob/master/crypto/zk/address.go)
   std/              -> Extended gnark std version with required ports.
     hash/poseidon/  -> Port to gnark of https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom
@@ -55,7 +54,7 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 
 ### Requirements
 * Go (1.20.2)
-* TinyGo ([@dgryski](https://github.com/dgryski) fork): [dgryski/tinygo@reflect-all-fixes-3](https://github.com/dgryski/tinygo/tree/dgryski/reflect-all-fixes-3)
+* TinyGo ([@mvdan](https://github.com/mvdan) fork): [mvdan/tinygo](https://github.com/mvdan/tinygo)
 
 
 ### Circuit 
@@ -107,30 +106,31 @@ Term descriptions:
 | *voteHash* | 📢 `public` | Parameter that combines the *privateKey* with the *factoryWeight* to be include it into the proof witness. |
 
 ### Available commands
+* **Compile circuit, prover and run a web example**
+  ```sh
+  make run-{compiler}-web-example
+  ```
+  Select the desired WebAssembly compiler (`go` or `tinygo`). It will compile the circuit to generate the artifacts and also compile the prover to webassembly.
+
+
+#### Other commands
 * **Compile the prover and optimize the output**
   ```sh
-  make compile-prover-{compiler}-{zk_backend}
+  make compile-prover-{compiler}
   ```
-  Select the desired WebAssembly compiler (`go` or `tinygo`) ZkSnark backend (`groth16` or `plonk`).
+  Select the desired WebAssembly compiler (`go` or `tinygo`).
 
 * **Compile the circuit artifacts**
   ```sh
-  make compile-circuit-{zk_backend}
+  make compile-circuit
   ```
-  Select the desired ZkSnark backend (`groth16` or `plonk`). It will override current artifacts.
-
-* **Run example**
-  ```sh
-  make run-{compiler}-example
-  ```
-  Select the desired WebAssembly compiler (`go` or `tinygo`). It will use a previously compiled circuit artifacts.
+  Generates the artifacts for the `plonk` ZkSnark backend. It will override current artifacts.
 
 ### Results
 
 #### Native
 | Snark Backend | Test result | Errors |
 |:---:|:---:|:---:|
-| Groth16 | ≈ 1.596s | ✅ |
 | Plonk | ≈ 2.181s | ✅ |
 
 ```
@@ -141,13 +141,9 @@ Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
 
 | Compiler | Snark Backend | Browser thread | Test result | Errors |
 |:---:|:---:|:---:|:---:|:---:|
-| Go (native) | Groth16 | main thread | ≈ 109.2s | ✅ |
 | Go (native) | Plonk | main thread | ≈ 138.8s | ✅ |
-| Go (native) | Groth16 | worker thread | ≈ 108.2s | ✅ |
 | Go (native) | Plonk | worker thread | ≈ 138.1s | ✅ |
-| TinyGo (dev) | Groth16 | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Plonk | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-| TinyGo (dev) | Groth16 | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 | TinyGo (dev) | Plonk | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
 
 ```
