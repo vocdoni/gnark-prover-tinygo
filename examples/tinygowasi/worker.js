@@ -19,12 +19,14 @@ addEventListener('message', async(e) => {
     let wasi = new WASI({
         env: {},
         args: [
-            "prover.wasm",
+            "/prover.wasm",
             `[${witness.join(",")}]`,
         ],
     });
     const wasmModule = await WebAssembly.compileStreaming(fetch(wasmUrl));
-    const instance = await wasi.instantiate(wasmModule, {});
+    const instance = await wasi.instantiate(wasmModule, {
+        ...wasi.getImports(wasmModule)
+    });
     console.log(instance)
 
     console.log("generating proof...");
