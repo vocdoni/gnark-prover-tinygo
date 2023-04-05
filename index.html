@@ -49,7 +49,7 @@
     console.log("loading go env and wasm...");
 
     // Create a worker
-    const worker = new Worker("/worker.js");
+    const worker = new Worker("./worker.js");
 
     worker.onmessage = (event) => {
       if (event.data.type === "log") {
@@ -69,7 +69,7 @@
     };
 
     console.log("reading artifacts...");
-    let resWitness = await fetch("/artifacts/zkcensus.witness");
+    let resWitness = await fetch("./artifacts/zkcensus.witness");
     let witnessBuff = await resWitness.arrayBuffer();
     let witness = new Uint8Array(witnessBuff);
 

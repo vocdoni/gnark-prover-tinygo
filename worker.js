@@ -1,4 +1,4 @@
-importScripts("wasm_exec.js");
+importScripts("./wasm_exec.js");
 
 const workerConsole = {
   log: (message) => {
