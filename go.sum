@@ -424,10 +424,10 @@ github.com/valyala/fasthttp v1.6.0/go.mod h1:FstJa9V+Pj9vQ7OJie2qMHdwemEDaDiSdBn
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/valyala/fasttemplate v1.2.1/go.mod h1:KHLXt3tVN2HBp8eijSv/kGJopbvo7S+qRAEEKiv+SiQ=
 github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV9WzVtRmSR+PDvWpU/qWl4Wa5LApYYX4ZtKbio=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.1 h1:+0BFh8zKWfj6EBqSYh7PL0Xd54Ckdpa8l537gWE6iog=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.1/go.mod h1:Lt50Nt9TQwr+kSPifJB3c0gFHcaRywAvVq1quMI/K4M=
-github.com/vocdoni/gnark-wasm-prover v0.1.2 h1:yZQsgwma/gnBTyHa55FyfNpG0yCJzLaGE0Vvo6NhtLE=
-github.com/vocdoni/gnark-wasm-prover v0.1.2/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
+github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405132703-97ba1f0ff39b h1:Myxbg7prCPS2ejYjuDhlMpoli6ZAtElGEHDo/97bUg0=
+github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405132703-97ba1f0ff39b/go.mod h1:Lt50Nt9TQwr+kSPifJB3c0gFHcaRywAvVq1quMI/K4M=
+github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405131853-c386d7f12ec8 h1:wwXYDG7qgJibFv697mRKh1dqiBdIga1Lzenclvv+Ric=
+github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405131853-c386d7f12ec8/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
 github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=

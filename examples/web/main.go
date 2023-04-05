@@ -22,7 +22,7 @@ func main() {
 	http.Handle("/", exampleFs)
 	http.Handle("/artifacts/", http.StripPrefix("/artifacts/", artifactsFs))
 
-	fmt.Println("Starting http server... Example url: http://localhost:5050/. Check the console!")
+	fmt.Println("Starting http server... Example url: http://0.0.0.0:5050/. Check the console!")
 	if err := http.ListenAndServe(":5050", nil); err != nil {
 		fmt.Println(err)
 	}

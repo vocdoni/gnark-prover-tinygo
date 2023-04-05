@@ -58,8 +58,10 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step = time.Now()
 
 	// Generate the proof
+	fmt.Println("generating proof...")
 	proof, err := prover.Prove(ccs, provingKey, cWitness)
 	if err != nil {
+		fmt.Println("error generating proof:", err.Error())
 		return nil, nil, fmt.Errorf("error generating proof: %w", err)
 	}
 	fmt.Println("proof generated, took (s):", time.Since(step))
