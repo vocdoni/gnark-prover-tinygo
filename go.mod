@@ -11,8 +11,8 @@ require (
 	github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
-	github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405132703-97ba1f0ff39b
-	github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405131853-c386d7f12ec8
+	github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405224249-b60182c35780
+	github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405224343-d5de1d6b977a
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 

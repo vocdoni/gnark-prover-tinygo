@@ -1,55 +1,83 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>Gnark ZkCensus-Wasm prover test | Vocdoni</title>
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <title>Gnark ZkCensus-Wasm prover test | Vocdoni</title>
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: lime;
+      padding: 1rem;
+    }
+
+    #log {
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 
 <body>
-    <h1>
-        Gnark ZkCensus-Wasm prover test
-    </h1>
+  <h1>
+    Gnark ZkCensus-Wasm prover test
+  </h1>
 
-    <pre>⚠️🚧 This repository is currently a <b>proof of concept</b>. 🚧⚠️</pre>
+  <pre>⚠️🚧 This repository is currently a <b>proof of concept</b>. 🚧⚠️</pre>
 
-    <p>Writing output from JS console:</p>
-    <small>Wait until the end. Some traces are not syncronized with the console.</small>
+  <p>Writing output from JS console:</p>
+  <small>Wait until the end. Some traces are not syncronized with the console.</small>
 
-    <div id="log"></div>
+  <div id="log"></div>
 </body>
 
 <script>
-    glog = console.log;
-    console.log = function(msg) {
-        glog(msg);
-        let node = document.createElement("div");
-        let timestamp = new Date().toISOString();
-        node.appendChild(document.createTextNode(`[${timestamp}] ${msg}`));
-        document.getElementById("log").appendChild(node);
-    }
+  glog = console.log;
+  console.log = function (msg) {
+    glog(msg);
+    let node = document.createElement("div");
+    let timestamp = new Date().toISOString();
+    node.appendChild(document.createTextNode(`[${timestamp}] ${msg}`));
+    document.getElementById("log").appendChild(node);
+  };
 </script>
 
-<script src="/wasm_exec.js"></script>
 <script>
-    (async() => {
-        let start = Date.now();
-        console.log("loading go env and wasm...");
-        const go = new Go();
-        let wasmModule = await WebAssembly.instantiateStreaming(fetch("/artifacts/prover.wasm"), go.importObject);
-        go.run(wasmModule.instance);
+  (async () => {
+    let start = Date.now();
+    console.log("loading go env and wasm...");
 
-        console.log("reading artifacts...");
+    // Create a worker
+    const worker = new Worker("/worker.js");
 
-        let resWitness = await fetch("/artifacts/zkcensus.witness");
-        let witnessBuff = await resWitness.arrayBuffer();
-        let witness = new Uint8Array(witnessBuff);
+    worker.onmessage = (event) => {
+      if (event.data.type === "log") {
+        // Log messages from the worker
+        console.log(event.data.message);
+      } else if (event.data.type === "proofGenerated") {
+        // Handle the result from the worker if needed
+        // const result = event.data.result;
+        // console.log("Proof generated:", result);
 
-        console.log("generating proof...")
-        generateProof(witness);
         let end = Date.now();
         let elapsed = end - start;
         console.log("Finished!", `${elapsed / 1000}s`);
-    })();
+      } else if (event.data.type === "error") {
+        console.error(event.data.message);
+      }
+    };
+
+    console.log("reading artifacts...");
+    let resWitness = await fetch("/artifacts/zkcensus.witness");
+    let witnessBuff = await resWitness.arrayBuffer();
+    let witness = new Uint8Array(witnessBuff);
+
+    console.log("generating proof...");
+
+    // Send the witness data to the worker
+    worker.postMessage({ type: "generateProof", witness });
+  })();
 </script>
 
 </html>
