@@ -26,7 +26,7 @@ onmessage = async (event) => {
 
     try {
       // Instantiate and run the wasm module with the modified Go environment
-      const result = await WebAssembly.instantiateStreaming(fetch("/artifacts/prover.wasm"), go.importObject);
+      const result = await WebAssembly.instantiateStreaming(fetch("./artifacts/prover.wasm"), go.importObject);
       go.run(result.instance);
 
       // Call the generateProof function with the witness data
