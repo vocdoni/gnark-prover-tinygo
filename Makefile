@@ -6,8 +6,8 @@ compile-prover-tinygo-wasi:
 	tinygo build -target=wasi -o examples/tinygowasi/artifacts/prover.wasm wasi/main.go
 
 compile-prover-tinygo:
-	tinygo build -target=wasm -o artifacts/prover.wasm wasm/main.go
-#	wasm-opt -O artifacts/circuit.wasm -o artifacts/circuit.wasm --enable-bulk-memory
+	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/prover.wasm wasm/main.go
+	wasm-opt -O artifacts/prover.wasm -o artifacts/prover.wasm --enable-bulk-memory
 
 compile-circuit:
 	@go run ./cmd/compiler
