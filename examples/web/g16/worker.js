@@ -13,6 +13,7 @@ console.log = workerConsole.log;
 console.error = workerConsole.error;
 
 const go = new Go();
+const WASM_URL = "/artifacts/g16_prover.wasm";
 
 // Replace the console.log function in the Go environment
 go.importObject.env["syscall/js.console_log"] = (sp) => {
@@ -25,9 +26,20 @@ onmessage = async (event) => {
     const witness = event.data.witness;
 
     try {
+      let wasm;
+
       // Instantiate and run the wasm module with the modified Go environment
-      const result = await WebAssembly.instantiateStreaming(fetch("/artifacts/g16_prover.wasm"), go.importObject);
-      go.run(result.instance);
+      if ('instantiateStreaming' in WebAssembly) {
+        const result = await WebAssembly.instantiateStreaming(fetch(WASM_URL), go.importObject);
+        wasm = result.instance;
+      } else {
+        const resp = await fetch(WASM_URL);
+        const bytes = await resp.arrayBuffer();
+        const result = await WebAssembly.instantiate(bytes, go.importObject);
+        wasm = result.instance;
+      }
+
+      go.run(wasm);
 
       // Call the generateProof function with the witness data
       const proof = generateProof(witness);

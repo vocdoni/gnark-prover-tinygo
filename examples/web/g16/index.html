@@ -38,9 +38,28 @@
     glog(msg);
     let node = document.createElement("div");
     let timestamp = new Date().toISOString();
-    node.appendChild(document.createTextNode(`[${timestamp}] ${msg}`));
+    node.innerHTML = `[${timestamp}] ${ansiToHTML(msg)}`;
     document.getElementById("log").appendChild(node);
   };
+
+  function ansiToHTML(ansi) {
+  const colors = {
+    "30": "black",
+    "31": "red",
+    "32": "lime",
+    "33": "yellow",
+    "34": "blue",
+    "35": "magenta",
+    "36": "cyan",
+    "37": "white",
+    "90": "gray"
+  };
+  return ansi.replace(/\u001b\[(\d+);?(\d+)?m(.*?)\u001b\[0m/g, (match, fg, bg, text) => {
+    const fgColor = colors[fg];
+    const bgColor = colors[bg];
+    return `<span style="color: ${fgColor};${bgColor ? ` background-color: ${bgColor};` : ''}">${text}</span>`;
+  });
+}
 </script>
 
 <script>
