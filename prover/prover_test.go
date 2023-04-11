@@ -5,14 +5,15 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/vocdoni/gnark-crypto-bn254/ecc"
-	"github.com/vocdoni/gnark-crypto-bn254/ecc/bn254/fr/kzg"
-	"github.com/vocdoni/gnark-wasm-prover/constraint"
-	cs "github.com/vocdoni/gnark-wasm-prover/csbn254"
-	"github.com/vocdoni/gnark-wasm-prover/frontend"
-	"github.com/vocdoni/gnark-wasm-prover/frontend/cs/scs"
-	plonk "github.com/vocdoni/gnark-wasm-prover/prover"
-	"github.com/vocdoni/gnark-wasm-prover/utils"
+	"github.com/consensys/gnark-crypto/ecc"
+	"github.com/consensys/gnark-crypto/ecc/bn254/fr/kzg"
+	"github.com/consensys/gnark/constraint"
+
+	plonk "github.com/consensys/gnark/backend/plonk/bn254"
+	cs "github.com/consensys/gnark/constraint/bn254"
+
+	"github.com/consensys/gnark/frontend"
+	"github.com/consensys/gnark/frontend/cs/scs"
 
 	qt "github.com/frankban/quicktest"
 )
@@ -32,7 +33,7 @@ func newKZGSRS(ccs constraint.ConstraintSystem) (*kzg.SRS, error) {
 	sizeSystem := nbConstraints + ccs.GetNbPublicVariables()
 	kzgSize := ecc.NextPowerOfTwo(uint64(sizeSystem)) + 3
 
-	curveID := utils.FieldToCurve(ccs.Field())
+	curveID := ecc.BN254
 	alpha, err := rand.Int(rand.Reader, curveID.ScalarField())
 	if err != nil {
 		return nil, err
@@ -76,6 +77,6 @@ func TestEnd2EndCircuit(t *testing.T) {
 	_, err = wtns.WriteTo(&wtnsBuff)
 	c.Assert(err, qt.IsNil)
 
-	_, _, err = GenerateProof(ccsBuff.Bytes(), srsBuff.Bytes(), pkeyBuff.Bytes(), wtnsBuff.Bytes())
+	_, _, err = GenerateProofPlonk(ccsBuff.Bytes(), srsBuff.Bytes(), pkeyBuff.Bytes(), wtnsBuff.Bytes())
 	c.Assert(err, qt.IsNil)
 }

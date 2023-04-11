@@ -55,8 +55,6 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
-github.com/bits-and-blooms/bitset v1.5.0 h1:NpE8frKRLGHIcEzkR+gZhiioW1+WbYV6fKwD6ZIpQT8=
-github.com/bits-and-blooms/bitset v1.5.0/go.mod h1:gIdJ4wp64HaoK2YrL1Q5/N7Y16edYb8uY+O0FJTyyDA=
 github.com/blang/semver/v4 v4.0.0 h1:1PFHFE6yCCTv8C1TeyNNarDzntLi7wMI5i/pzqYIsAM=
 github.com/blang/semver/v4 v4.0.0/go.mod h1:IbckMUScFkM3pff0VJDNKRiT6TG/YpiHIM2yvyW5YoQ=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -88,8 +86,6 @@ github.com/cockroachdb/sentry-go v0.6.1-cockroachdb.2/go.mod h1:8BT+cPK6xvFOcRlk
 github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0/go.mod h1:4Zcjuz89kmFXt9morQgcfYZAYZ5n8WHjt81YYWIwtTM=
 github.com/consensys/bavard v0.1.13 h1:oLhMLOFGTLdlda/kma4VOJazblc7IM5y5QPd2A/YjhQ=
 github.com/consensys/bavard v0.1.13/go.mod h1:9ItSMtA/dXMAiL7BG6bqW2m3NdSEObYWoH223nGHukI=
-github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284 h1:ZkKLv+Sw68HfGtWf9eYleLl8VhGaM2Ca4QIqodL5K9E=
-github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284/go.mod h1:5610Mo3dWDyijki57vcCAkhjQATFnLz/Tzy4/TkCL58=
 github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978 h1:jMmg1FkGd5+Fv1jWNTwSIGVz5qkabvPvbfFb5v1mmIA=
 github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978/go.mod h1:Iq/P3HHl0ElSjsg2E1gsMwhAyxnxoKK5nVyZKd+/KhU=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
@@ -120,8 +116,6 @@ github.com/frankban/quicktest v1.14.4 h1:g2rn0vABPOOXmZUj+vbmUp0lPoXEMuhTpIluN0X
 github.com/frankban/quicktest v1.14.4/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
-github.com/fxamacker/cbor/v2 v2.4.0 h1:ri0ArlOR+5XunOP8CRUowT0pSJOwhW098ZCUyskZD88=
-github.com/fxamacker/cbor/v2 v2.4.0/go.mod h1:TA1xS00nchWmaBnEIxPSE5oHLuJBAVvqrtAnWBwBCVo=
 github.com/gavv/httpexpect v2.0.0+incompatible/go.mod h1:x+9tiU1YnrOvnB725RkpoLv1M62hOWzwo5OXotisrKc=
 github.com/getsentry/sentry-go v0.12.0 h1:era7g0re5iY13bHSdN/xMkyV+5zZppjRVQhZrXCaEIk=
 github.com/getsentry/sentry-go v0.12.0/go.mod h1:NSap0JBYWzHND8oMbyi0+XZhUalc1TBdRL1M71JZW2c=
@@ -424,16 +418,8 @@ github.com/valyala/fasthttp v1.6.0/go.mod h1:FstJa9V+Pj9vQ7OJie2qMHdwemEDaDiSdBn
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/valyala/fasttemplate v1.2.1/go.mod h1:KHLXt3tVN2HBp8eijSv/kGJopbvo7S+qRAEEKiv+SiQ=
 github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV9WzVtRmSR+PDvWpU/qWl4Wa5LApYYX4ZtKbio=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405132703-97ba1f0ff39b h1:Myxbg7prCPS2ejYjuDhlMpoli6ZAtElGEHDo/97bUg0=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405132703-97ba1f0ff39b/go.mod h1:Lt50Nt9TQwr+kSPifJB3c0gFHcaRywAvVq1quMI/K4M=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405224249-b60182c35780 h1:ANHXR+o7LQZlaVh8+S85XRoV9CWPcEpV+jq2b58V2QU=
-github.com/vocdoni/gnark-crypto-bn254 v0.10.2-0.20230405224249-b60182c35780/go.mod h1:Lt50Nt9TQwr+kSPifJB3c0gFHcaRywAvVq1quMI/K4M=
-github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405131853-c386d7f12ec8 h1:wwXYDG7qgJibFv697mRKh1dqiBdIga1Lzenclvv+Ric=
-github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405131853-c386d7f12ec8/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
-github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405224343-d5de1d6b977a h1:6ZfeHL9K/CnLuPJ2X3iahXPieQJf0kp7PUub1WSW9pE=
-github.com/vocdoni/gnark-wasm-prover v0.1.3-0.20230405224343-d5de1d6b977a/go.mod h1:9bxHcJNelEsHBX5bEYB9dGJQGM3eeGBkotl6ClLysLk=
-github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
-github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
+github.com/vocdoni/gnark v0.0.0-20230411153421-61e610e91bfc h1:W9Z+EtzsXMayDSXWGlPs3nJttARfWXw1MoYGbCcC004=
+github.com/vocdoni/gnark v0.0.0-20230411153421-61e610e91bfc/go.mod h1:n3VFOMS40jLDwrsHnTdWxQKbtX1ehc0W3AKxTTk/Drc=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415/go.mod h1:GwrjFmJcFw6At/Gs6z4yjiIwzuJ1/+UwLxMQDVQXShQ=
 github.com/xeipuuv/gojsonschema v1.2.0/go.mod h1:anYRn/JVcOK2ZgGU+IjEV4nwlhoK5sQluxsYJ78Id3Y=

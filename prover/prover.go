@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/vocdoni/gnark-crypto-bn254/ecc"
-	"github.com/vocdoni/gnark-crypto-bn254/kzg"
-	"github.com/vocdoni/gnark-wasm-prover/csbn254"
-	"github.com/vocdoni/gnark-wasm-prover/prover"
-	"github.com/vocdoni/gnark-wasm-prover/witness"
+	"github.com/consensys/gnark-crypto/ecc"
+	"github.com/consensys/gnark-crypto/kzg"
+	prover "github.com/consensys/gnark/backend/plonk/bn254"
+	witness "github.com/consensys/gnark/backend/witness"
+	csbn254 "github.com/consensys/gnark/constraint/bn254"
+	"github.com/consensys/gnark/std"
 )
 
-// GenerateProof sets up the circuit with the constrain system and the srs files
+// GenerateProofPlonk sets up the circuit with the constrain system and the srs files
 // provided and generates the proof for the JSON encoded inputs (witness). It
 // returns the verification key, the proof and the public witness, all of this
 // outputs will be encoded as JSON. If something fails, it returns an error.
-func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
+func GenerateProofPlonk(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	step := time.Now()
 	// Read and initialize circuit CS
 	fmt.Println("loading circuit...")
@@ -56,6 +57,9 @@ func GenerateProof(bccs, bsrs, bpkey, inputs []byte) ([]byte, []byte, error) {
 	}
 	fmt.Println("witness loaded, took (s):", time.Since(step))
 	step = time.Now()
+
+	// Initialize the hints registry
+	std.RegisterHints()
 
 	// Generate the proof
 	fmt.Println("generating proof...")

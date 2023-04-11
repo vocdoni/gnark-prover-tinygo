@@ -13,8 +13,6 @@ import (
 	cs "github.com/consensys/gnark/constraint/bn254"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/scs"
-	"github.com/vocdoni/gnark-wasm-prover/encoder"
-	"github.com/vocdoni/gnark-wasm-prover/utils"
 )
 
 const srsKZGsize = (1 << 14) + 3
@@ -29,7 +27,7 @@ func compilePlonk() (constraint.ConstraintSystem, *kzg.SRS, plonk.ProvingKey, pl
 	}
 
 	// Generate KZG file (trusted setup)
-	curveID := utils.FieldToCurve(ccs.Field())
+	curveID := ecc.BN254
 	alpha, err := rand.Int(rand.Reader, curveID.ScalarField())
 	if err != nil {
 		return nil, nil, nil, nil, err
@@ -75,7 +73,7 @@ func savePlonk(ccs constraint.ConstraintSystem, kzg *kzg.SRS, provingKey plonk.P
 	}
 	defer fdCCS.Close()
 	_scs := ccs.(*cs.SparseR1CS)
-	n, err = encoder.Encode(fdCCS, _scs)
+	n, err = _scs.WriteTo(fdCCS)
 	if err != nil {
 		return err
 	}
