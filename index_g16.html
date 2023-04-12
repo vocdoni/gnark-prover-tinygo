@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Gnark ZkCensus-Wasm prover test | Vocdoni</title>
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: lime;
+      padding: 1rem;
+    }
+
+    #log {
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    Gnark ZkCensus-Wasm prover test
+  </h1>
+
+  <pre>⚠️🚧 This repository is currently a <b>proof of concept</b>. 🚧⚠️</pre>
+
+  <div id="log"></div>
+</body>
+
+<script>
+  glog = console.log;
+  console.log = function (msg) {
+    glog(msg);
+    let node = document.createElement("div");
+    let timestamp = new Date().toISOString();
+    node.innerHTML = `[${timestamp}] ${ansiToHTML(msg)}`;
+    document.getElementById("log").appendChild(node);
+  };
+
+  function ansiToHTML(ansi) {
+  const colors = {
+    "30": "black",
+    "31": "red",
+    "32": "lime",
+    "33": "yellow",
+    "34": "blue",
+    "35": "magenta",
+    "36": "cyan",
+    "37": "white",
+    "90": "gray"
+  };
+  return ansi.replace(/\u001b\[(\d+);?(\d+)?m(.*?)\u001b\[0m/g, (match, fg, bg, text) => {
+    const fgColor = colors[fg];
+    const bgColor = colors[bg];
+    return `<span style="color: ${fgColor};${bgColor ? ` background-color: ${bgColor};` : ''}">${text}</span>`;
+  });
+}
+</script>
+
+<script>
+  (async () => {
+    let start = Date.now();
+    console.log("loading go env and wasm...");
+
+    // Create a worker
+    const worker = new Worker("/worker_g16.js");
+
+    worker.onmessage = (event) => {
+      if (event.data.type === "log") {
+        // Log messages from the worker
+        console.log(event.data.message);
+      } else if (event.data.type === "proofGenerated") {
+        // Handle the result from the worker if needed
+        // const result = event.data.result;
+        // console.log("Proof generated:", result);
+
+        let end = Date.now();
+        let elapsed = end - start;
+        console.log(`Finished! Elapsed time: ${elapsed} ms`);
+
+
+      } else if (event.data.type === "error") {
+        console.error(event.data.message);
+      }
+    };
+
+    console.log("reading artifacts...");
+    let resWitness = await fetch("/artifacts/zkcensus.witness");
+    let witnessBuff = await resWitness.arrayBuffer();
+    let witness = new Uint8Array(witnessBuff);
+
+    console.log("generating proof...");
+
+    // Send the witness data to the worker
+    worker.postMessage({ type: "generateProof", witness });
+  })();
+</script>
+
+</html>
