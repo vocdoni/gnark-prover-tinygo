@@ -7,7 +7,8 @@ go 1.19
 // replace github.com/vocdoni/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto-bn254
 // replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
 
-replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230411153421-61e610e91bfc
+replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230411222106-4206209bbdef
+replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e
 
 require (
 	github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284
@@ -20,6 +21,7 @@ require (
 require (
 	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bits-and-blooms/bitset v1.5.0 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cockroachdb/errors v1.8.9 // indirect

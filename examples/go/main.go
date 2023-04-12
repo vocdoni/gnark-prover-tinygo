@@ -24,7 +24,7 @@ func main() {
 	}
 
 	start := time.Now()
-	proof, pubWitness, err := prover.GenerateProof(ccs, srs, pkey, witness)
+	proof, pubWitness, err := prover.GenerateProofPlonk(ccs, srs, pkey, witness)
 	if err != nil {
 		panic(err)
 	}
