@@ -44,7 +44,7 @@ func saveGroth16(ccs constraint.ConstraintSystem, provingKey groth16.ProvingKey,
 		return err
 	}
 	defer fdPKey.Close()
-	if _, err := provingKey.WriteTo(fdPKey); err != nil {
+	if _, err := provingKey.WriteRawTo(fdPKey); err != nil {
 		return err
 	}
 
@@ -53,7 +53,7 @@ func saveGroth16(ccs constraint.ConstraintSystem, provingKey groth16.ProvingKey,
 		return err
 	}
 	defer fdVKey.Close()
-	if _, err := verifyingKey.WriteTo(fdVKey); err != nil {
+	if _, err := verifyingKey.WriteRawTo(fdVKey); err != nil {
 		return err
 	}
 	return nil

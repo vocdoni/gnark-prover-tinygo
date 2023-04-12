@@ -4,7 +4,7 @@ go 1.19
 
 // replace github.com/vocdoni/gnark-wasm-prover => /home/p4u/repos/vocdoni/gprover
 // replace github.com/vocdoni/gnark-wasm-prover => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-wasm-prover
-// replace github.com/vocdoni/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto-bn254
+// replace github.com/vocdoni/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
 // replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
 
 replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230411222106-4206209bbdef
