@@ -13,7 +13,7 @@ console.log = workerConsole.log;
 console.error = workerConsole.error;
 
 const go = new Go();
-const WASM_URL = "/artifacts/g16_prover.wasm";
+const WASM_URL = "./artifacts/g16_prover.wasm";
 
 // Replace the console.log function in the Go environment
 go.importObject.env["syscall/js.console_log"] = (sp) => {
