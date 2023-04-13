@@ -41,8 +41,18 @@ onmessage = async (event) => {
 
       go.run(wasm);
 
+      // Measure the start time of proof generation
+      const startTime = performance.now();
+
       // Call the generateProof function with the witness data
       const proof = generateProof(witness);
+
+      // Measure the end time of proof generation
+      const endTime = performance.now();
+
+      // Calculate the time taken for proof generation
+      const elapsedTime = endTime - startTime;
+      console.log(`Proof generation took ${elapsedTime} ms`);
 
       // Send the result back to the main thread
       postMessage({ type: "proofGenerated", result: proof });

@@ -61,6 +61,7 @@
 
 <script>
   (async () => {
+    let start = Date.now();
     console.log("loading go env and wasm...");
 
     // Create a worker
@@ -90,7 +91,6 @@
     let witnessBuff = await resWitness.arrayBuffer();
     let witness = new Uint8Array(witnessBuff);
 
-    let start = Date.now();
     console.log("generating proof...");
 
     // Send the witness data to the worker
