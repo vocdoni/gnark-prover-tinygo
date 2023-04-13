@@ -76,11 +76,6 @@
         // const result = event.data.result;
         // console.log("Proof generated:", result);
 
-        let end = Date.now();
-        let elapsed = end - start;
-        console.log(`Finished! Elapsed time: ${elapsed} ms`);
-
-
       } else if (event.data.type === "error") {
         console.error(event.data.message);
       }
@@ -91,7 +86,7 @@
     let witnessBuff = await resWitness.arrayBuffer();
     let witness = new Uint8Array(witnessBuff);
 
-    console.log("generating proof...");
+    console.log("downloading data and generating proof...");
 
     // Send the witness data to the worker
     worker.postMessage({ type: "generateProof", witness });
