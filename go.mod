@@ -7,7 +7,8 @@ go 1.19
 // replace github.com/vocdoni/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
 // replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
 
-replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230411222106-4206209bbdef
+replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69
+
 replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e
 
 require (

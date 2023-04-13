@@ -11,6 +11,9 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
  - 💉 Supports unit testing and many modern backends and curves.
  - 🔗 [vocdoni-node](https://github.com/vocdoni/vocdoni-node) is currently writed enterily in Go, like Gnark, which will increase the maintainability of the source code.
 
+**Read** about the comprehensive insights, decisions made, benchmarks and conclusions drawn in our article here https://hackmd.io/@vocdoni/B1VPA99Z3
+
+
 ## Project structure
 ```
   artifacts/        -> Includes generated artifacts for the implemented and compiled circuits.
@@ -42,23 +45,13 @@ It implements the same use case as [this circuit](https://github.com/vocdoni/zk-
 3. Generic Gnark prover/verifier implementation.
     - Go WASM compiler as baseline. Found some incompatibilities with TinyGo<sup>[2](#problems-found)</sup>. 
 
-#### Problems found
-
-1. Solver missing hint(s):
-    - Issue on Gnark repository and partial solution: [ConsenSys/gnark#600](https://github.com/ConsenSys/gnark/issues/600).
-    - Final solution: [phated/gnark-browser](https://github.com/phated/gnark-browser/blob/2446c65e89156f1a04163724a89e5dcb7e4c4886/README.md#solution-hint-registration).
-2. Missing reflect implementations in TinyGo:
-    - Issue on TinyGo repository: [tinygo-org/tinygo#447](https://github.com/tinygo-org/tinygo/issues/447#issuecomment-1455205919).
-    - Partial solution (fix the error during compilation, but not during execution): [dgryski/tinygo@reflect-all-fixes-3](https://github.com/dgryski/tinygo/tree/dgryski/reflect-all-fixes-3)
-
-
 ### Requirements
 * Go (1.20.2)
-* TinyGo ([@mvdan](https://github.com/mvdan) fork): [mvdan/tinygo](https://github.com/mvdan/tinygo)
+* TinyGo ([@vocdoni](https://github.com/vocdoni) fork): [vocdoni/tinygo](https://github.com/vocdoni/tinygo)
 
 
 ### Circuit 
-The ZkCensus circuit anonymously proves that a voter is already registered in the census of a given election, making him or her a valid voter.
+The ZkCensus circuit anonymously proves that a voter is part of a census for a given election, without revealing its identity.
 
 The ZkCensus circuit proves the following assertions:
 1. The combination of the computed ZkAddress (using the given PrivateKey as seed) and the provided factoryWeight is a valid census tree leaf. This is tested computing the merkle root  with the candidate leaf and the provided siblings, and comparing the result with the provided census root.
@@ -108,44 +101,12 @@ Term descriptions:
 ### Available commands
 * **Compile circuit, prover and run a web example**
   ```sh
-  make run-{compiler}-web-example
+  make run-tinygo-web-example-g16
   ```
-  Select the desired WebAssembly compiler (`go` or `tinygo` or `wasi` using `tinygo`). It will compile the circuit to generate the artifacts and also compile the prover to webassembly.
-
+  or for Plonk
+  ```sh
+  make run-tinygo-web-example-plonk
+  ```
 
 #### Other commands
-* **Compile the prover and optimize the output**
-  ```sh
-  make compile-prover-{compiler}
-  ```
-  Select the desired WebAssembly compiler (`go` or `tinygo`).
-
-* **Compile the circuit artifacts**
-  ```sh
-  make compile-circuit
-  ```
-  Generates the artifacts for the `plonk` ZkSnark backend. It will override current artifacts.
-
-### Results
-
-#### Native
-| Snark Backend | Test result | Errors |
-|:---:|:---:|:---:|
-| Plonk | ≈ 2.181s | ✅ |
-
-```
-Macmini9,1 (Z12N0004MY/A), Chip Apple M1 (8 cores), 16 GB Memory
-```
-
-#### Browser
-
-| Compiler | Snark Backend | Browser thread | Test result | Errors |
-|:---:|:---:|:---:|:---:|:---:|
-| Go (native) | Plonk | main thread | ≈ 138.8s | ✅ |
-| Go (native) | Plonk | worker thread | ≈ 138.1s | ✅ |
-| TinyGo (dev) | Plonk | main thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-| TinyGo (dev) | Plonk | worker thread | - | ❌ `panic: reflect: unimplemented: AssignableTo with interface` |
-
-```
-Google Chrome Versión 111.0.5563.146 (Build oficial) (arm64)
-```
+See Makefile

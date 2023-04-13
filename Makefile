@@ -14,7 +14,7 @@ compile-prover-tinygo-plonk:
 	wasm-opt -O artifacts/plonk_prover.wasm -o artifacts/plonk_prover.wasm --enable-bulk-memory
 
 compile-prover-tinygo-g16:
-	tinygo build -target=wasm -no-debug -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
+	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
 	wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
 
 compile-circuit-plonk:

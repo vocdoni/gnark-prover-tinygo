@@ -418,8 +418,8 @@ github.com/valyala/fasthttp v1.6.0/go.mod h1:FstJa9V+Pj9vQ7OJie2qMHdwemEDaDiSdBn
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/valyala/fasttemplate v1.2.1/go.mod h1:KHLXt3tVN2HBp8eijSv/kGJopbvo7S+qRAEEKiv+SiQ=
 github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV9WzVtRmSR+PDvWpU/qWl4Wa5LApYYX4ZtKbio=
-github.com/vocdoni/gnark v0.0.0-20230411222106-4206209bbdef h1:G4pyd7Fm5pvc8tHQuaVn4kSg6KARlNWeJBmimbkJyD4=
-github.com/vocdoni/gnark v0.0.0-20230411222106-4206209bbdef/go.mod h1:n3VFOMS40jLDwrsHnTdWxQKbtX1ehc0W3AKxTTk/Drc=
+github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69 h1:W7hg87bbFC1dzdBXbS/atbWQtaOQOdVyo5ksdnzaI18=
+github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69/go.mod h1:n3VFOMS40jLDwrsHnTdWxQKbtX1ehc0W3AKxTTk/Drc=
 github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e h1:ZSefWHtzLRgPNiegSpLcSxqimdSs8DZKgkJvOxm3P0M=
 github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e/go.mod h1:Iq/P3HHl0ElSjsg2E1gsMwhAyxnxoKK5nVyZKd+/KhU=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=
