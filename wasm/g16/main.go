@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gnark-prover-tinygo/prover"
 	"syscall/js"
+	"time"
 )
 
 //go:embed zkcensus.ccs
@@ -26,8 +27,11 @@ func jsGenerateProof(this js.Value, args []js.Value) interface{} {
 	bwitness := make([]byte, args[0].Get("length").Int())
 	js.CopyBytesToGo(bwitness, args[0])
 	fmt.Println("Calling function GenerateProof")
+	startTime := time.Now()
 	if _, _, err := prover.GenerateProofGroth16(circuit, epkey, bwitness); err != nil {
-		return err.Error()
+		fmt.Println("Error calling function GenerateProof", err.Error())
+		return 0
 	}
-	return nil
+	elapsedTime := int(time.Now().Sub(startTime).Seconds() * 1000)
+	return elapsedTime
 }
