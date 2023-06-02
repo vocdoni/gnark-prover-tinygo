@@ -3,7 +3,7 @@ import './wasm_exec.js';
 import { init, WASI } from '@wasmer/wasi';
 
 import witnessUrl from "url:./artifacts/zkcensus.witness";
-import wasmUrl from "url:./artifacts/prover.wasm";
+import wasmUrl from "url:./artifacts/g16_prover.wasm";
 
 addEventListener('message', async(e) => {
     await init();
@@ -19,7 +19,6 @@ addEventListener('message', async(e) => {
     let wasi = new WASI({
         env: {},
         args: [
-            "/prover.wasm",
             `[${witness.join(",")}]`,
         ],
     });

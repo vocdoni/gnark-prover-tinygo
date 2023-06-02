@@ -6,9 +6,6 @@ compile-prover-go-g16:
 	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o artifacts/g16_prover.wasm wasm/g16/main.go
 	wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
 
-compile-prover-tinygo-wasi:
-	tinygo build -target=wasi -o examples/tinygowasi/artifacts/prover.wasm wasi/main.go
-
 compile-prover-tinygo-plonk:
 	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/plonk_prover.wasm wasm/plonk/main.go
 	wasm-opt -O artifacts/plonk_prover.wasm -o artifacts/plonk_prover.wasm --enable-bulk-memory
@@ -16,6 +13,10 @@ compile-prover-tinygo-plonk:
 compile-prover-tinygo-g16:
 	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
 	wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
+
+compile-prover-tinygo-g16-wasi:
+	tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
+	wasm-opt -O artifacts/g16_prover.wasi -o artifacts/g16_prover.wasi --enable-bulk-memory
 
 compile-circuit-plonk:
 	@go run ./cmd/compiler --protocol=plonk
@@ -90,9 +91,24 @@ run-tinygo-web-example-g16:
 	@ln -s index_g16.html examples/web/index.html
 	@go run examples/web/main.go
 
-run-wasi-web-example:
+run-tinygo-web-example-g16-wasi:
+	@echo "compilling circuit and genering artifacts for groth16"
+	@make compile-circuit-g16
+	@echo "copying artifacts"
+	@cp ./artifacts/g16_zkcensus.ccs ./wasi/zkcensus.ccs
+	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
+	@echo "compilling the prover for tinygo and wasi"
+	@make compile-prover-tinygo-g16-wasi
+	@cp ./artifacts/zkcensus.witness ./examples/tinygowasi/artifacts/zkcensus.witness
+	@cp ./artifacts/g16_prover.wasi ./examples/tinygowasi/artifacts/g16_prover.wasm
+	@echo "removing copied artifacts"
+	@rm ./wasi/zkcensus.ccs
+	@rm ./wasi/zkcensus.pkey
+	@cd ./examples/tinygowasi && npm i && npx parcel index.html
+
+run-wasi-web-example-plonk:
 	@echo "compilling circuit and genering artifacts"
-	@make compile-circuit
+	@make compile-circuit-g16
 	@echo "copying artifacts"
 	@cp ./artifacts/zkcensus.ccs ./wasi/zkcensus.ccs
 	@cp ./artifacts/zkcensus.srs ./wasi/zkcensus.srs

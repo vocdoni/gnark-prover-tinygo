@@ -10,10 +10,7 @@ import (
 )
 
 //go:embed zkcensus.ccs
-var eccs []byte
-
-//go:embed zkcensus.srs
-var esrs []byte
+var circuit []byte
 
 //go:embed zkcensus.pkey
 var epkey []byte
@@ -25,7 +22,7 @@ func main() {
 
 //export generateProof
 func GenerateProof(bwitness []byte) interface{} {
-	if _, _, err := prover.GenerateProof(eccs, esrs, epkey, bwitness); err != nil {
+	if _, _, err := prover.GenerateProofGroth16(circuit, epkey, bwitness); err != nil {
 		fmt.Println(err)
 		return err.Error()
 	}
