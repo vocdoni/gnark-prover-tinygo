@@ -30,6 +30,10 @@
 
   
   <script type="module">
+  import witnessUrl from "url:./artifacts/zkcensus.witness";
+  import wasmUrl from "url:./artifacts/g16_prover.wasm";
+  import { init, WASI } from '@wasmer/wasi';
+
     var glog = console.log;
     console.log = function (msg) {
       glog(msg);
@@ -60,34 +64,55 @@
 
     (async () => {
       let start = Date.now();
-      console.log("loading go env and wasm...");
-
-      // Create a worker
-      const worker = new Worker(new URL('./worker.js', import.meta.url), {type: 'module'});
-
-      worker.onmessage = (event) => {
-        if (event.data.type === "log") {
-          // Log messages from the worker
-          console.log(event.data.message);
-        } else if (event.data.type === "proofGenerated") {
-          // Handle the result from the worker if needed
-          // const result = event.data.result;
-          // console.log("Proof generated:", result);
-
-        } else if (event.data.type === "error") {
-          console.error(event.data.message);
-        }
-      };
-
       console.log("reading artifacts...");
       let resWitness = await fetch("./artifacts/zkcensus.witness");
       let witnessBuff = await resWitness.arrayBuffer();
       let witness = new Uint8Array(witnessBuff);
+      
+      console.log("loading go env and wasm...");
+      await init();
+    
+      try {
+        console.log("reading artifacts...");
 
-      console.log("downloading data and generating proof...");
+        let resWitness = await fetch(witnessUrl);
+        let witnessBuff = await resWitness.arrayBuffer();
+        let witness = new Uint8Array(witnessBuff);
 
-      // Send the witness data to the worker
-      worker.postMessage({ type: "generateProof", witness });
+        console.log("downloading data and generating proof...");
+
+        // Instantiate the WASI instance
+        console.log("loading go env and wasm...");
+        let wasi = new WASI({
+          args: [  
+            `[${witness.join(",")}]`,
+          ],
+          env: {},
+          bindings: {
+            ...WASI.defaultBindings,
+          }
+        });
+
+        // Fetch our Wasm File
+        console.log("fetching wasm...");
+        let response = await fetch(wasmUrl)
+        let wasmBytes = new Uint8Array(await response.arrayBuffer())
+
+        // Instantiate the WebAssembly file
+        console.log("instantiating wasm...");
+        let wasmModule = await WebAssembly.compile(wasmBytes);
+
+        let instance = await WebAssembly.instantiate(wasmModule, {...wasi.getImports(wasmModule)});
+
+        // Start the WebAssembly WASI instance!
+        wasi.start(instance);
+        instance.exports.generateProof(witness);
+
+        let stdout = wasi.getStdoutString(); // Get the contents of stdout
+        console.log(`Standard Output: ${stdout}`); // Write stdout data to the DOM
+      } catch (error) {
+        console.error(error);
+      }
     })();
   </script>
 
