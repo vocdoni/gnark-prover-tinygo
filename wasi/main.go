@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"fmt"
 	"gnark-prover-tinygo/prover"
+	"os"
 )
 
 //go:embed zkcensus.ccs
@@ -16,6 +17,8 @@ var circuit []byte
 var epkey []byte
 
 func main() {
+	witness := []byte(os.Args[1])
+	GenerateProof(witness)
 	c := make(chan interface{})
 	<-c
 }

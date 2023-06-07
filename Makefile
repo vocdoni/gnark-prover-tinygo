@@ -99,12 +99,13 @@ run-tinygo-web-example-g16-wasi:
 	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
 	@echo "compilling the prover for tinygo and wasi"
 	@make compile-prover-tinygo-g16-wasi
-	@cp ./artifacts/zkcensus.witness ./examples/tinygowasi/artifacts/zkcensus.witness
-	@cp ./artifacts/g16_prover.wasi ./examples/tinygowasi/artifacts/g16_prover.wasm
+	@cp ./artifacts/zkcensus.witness ./examples/wasiweb/artifacts/zkcensus.witness
+	@cp ./artifacts/g16_prover.wasi ./examples/wasiweb/artifacts/g16_prover.wasm
+	@cp ./artifacts/wasm_exec_tinygo.js ./examples/wasiweb/wasm_exec.js
 	@echo "removing copied artifacts"
 	@rm ./wasi/zkcensus.ccs
 	@rm ./wasi/zkcensus.pkey
-	@cd ./examples/tinygowasi && npm i && npx parcel index.html
+	@cd ./examples/wasiweb && npm i && npx parcel index.html
 
 run-wasi-web-example-plonk:
 	@echo "compilling circuit and genering artifacts"
