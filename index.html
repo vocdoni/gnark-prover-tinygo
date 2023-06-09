@@ -94,7 +94,14 @@
   let witnessView = new Uint8Array(instance.exports.memory.buffer, witnessPtr, witness.length);
   witnessView.set(witness);
 
+  // Start the timer
+  let startTime = Date.now();
   instance.exports.generateProof(witnessPtr, witness.length);
+  let endTime = Date.now();
+  let elapsedTime = (endTime - startTime) / 1000;
+
+  document.getElementById('log').innerHTML = `Proof generated correctly, took ${elapsedTime} seconds.`;
+
   //instance.exports.getProof(witness);
   } catch (error) {
       let stdoutArray = new Uint8Array(fds[1].file.data);
