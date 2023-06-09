@@ -12,10 +12,10 @@ compile-prover-tinygo-plonk:
 
 compile-prover-tinygo-g16:
 	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
-	wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
+	#wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
 
 compile-prover-tinygo-g16-wasi:
-	tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
+	tinygo build -target=wasi -opt=1 -scheduler=none -o artifacts/g16_prover.wasi wasi/main.go
 	#wasm-opt -O artifacts/g16_prover.wasi -o artifacts/g16_prover.wasi --enable-bulk-memory
 
 compile-circuit-plonk:
