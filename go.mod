@@ -4,16 +4,17 @@ go 1.19
 
 // replace github.com/vocdoni/gnark-wasm-prover => /home/p4u/repos/vocdoni/gprover
 // replace github.com/vocdoni/gnark-wasm-prover => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-wasm-prover
-// replace github.com/vocdoni/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
-// replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
 
-replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69
+replace github.com/consensys/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
+replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
 
-replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e
+//replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69
+
+//replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e
 
 require (
 	github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284
-	github.com/consensys/gnark-crypto v0.9.2-0.20230314094804-5185eb8c3978
+	github.com/consensys/gnark-crypto v0.10.1-0.20230426090045-2a781ae21a86
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
@@ -37,7 +38,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
+	github.com/google/pprof v0.0.0-20230309165930-d61513b1440d // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect

@@ -28,93 +28,99 @@
 
   <div id="log"></div>
 
-  
+
   <script type="module">
-  import witnessUrl from "url:./artifacts/zkcensus.witness";
-  import wasmUrl from "url:./artifacts/g16_prover.wasm";
-  import { init, WASI } from '@wasmer/wasi';
+  let witnessUrl = "./artifacts/zkcensus.witness";
+  let wasmUrl = "./artifacts/g16_prover.wasm";
 
-    var glog = console.log;
-    console.log = function (msg) {
-      glog(msg);
-      let node = document.createElement("div");
-      let timestamp = new Date().toISOString();
-      node.innerHTML = `[${timestamp}] ${ansiToHTML(msg)}`;
-      document.getElementById("log").appendChild(node);
-    };
+  import { Fd } from "./dist/fd.js";
+  import { OpenFile } from "./dist/fs_fd.js"
+  import WASI from "./dist/wasi.js";
+  import { File } from "./dist/fs_core.js";
 
-    function ansiToHTML(ansi) {
-      const colors = {
-        "30": "black",
-        "31": "red",
-        "32": "lime",
-        "33": "yellow",
-        "34": "blue",
-        "35": "magenta",
-        "36": "cyan",
-        "37": "white",
-        "90": "gray"
-      };
-      return ansi.replace(/\u001b\[(\d+);?(\d+)?m(.*?)\u001b\[0m/g, (match, fg, bg, text) => {
-        const fgColor = colors[fg];
-        const bgColor = colors[bg];
-        return `<span style="color: ${fgColor};${bgColor ? ` background-color: ${bgColor};` : ''}">${text}</span>`;
-      });
+  (async () => {
+    console.log("Reading artifacts...");
+    let resWitness = await fetch(witnessUrl);
+    let witnessBuff = await resWitness.arrayBuffer();
+    let witness = new Uint8Array(witnessBuff);
+
+    console.log("Loading WASI environment and WASM...");
+
+    let env = [];
+    let args = ["."];
+
+    let fds = [
+      new OpenFile(new File(new Uint8Array(), 'stdin')), // stdin
+      new OpenFile(new File(new Uint8Array(), 'stdout')), // stdout
+      new OpenFile(new File(new Uint8Array(), 'stderr')), // stderr
+    ];
+
+
+    console.log("Fetching WASM...");
+    let response = await fetch(wasmUrl);
+    let wasmBytes = new Uint8Array(await response.arrayBuffer());
+
+    console.log("Instantiating WASM...");
+    let wasmModule = await WebAssembly.compile(wasmBytes);
+
+    let wasi = new WASI(args, env, fds);
+    let instance = await WebAssembly.instantiate(wasmModule, {
+      "wasi_snapshot_preview1": wasi.wasiImport,
+    });
+  
+    if (!instance || !instance.exports || !instance.exports.memory) {
+      console.error('Failed to instantiate WebAssembly module or to access its exports or memory');
+      return;
     }
 
-    (async () => {
-      let start = Date.now();
-      console.log("reading artifacts...");
-      let resWitness = await fetch("./artifacts/zkcensus.witness");
-      let witnessBuff = await resWitness.arrayBuffer();
-      let witness = new Uint8Array(witnessBuff);
-      
-      console.log("loading go env and wasm...");
-      await init();
-    
-      try {
-        console.log("reading artifacts...");
+    // Start a periodic task that reads the stdout and stderr data
+  let intervalId = setInterval(() => {
+  let stdoutArray = new Uint8Array(fds[1].file.data);
+  let stderrArray = new Uint8Array(fds[2].file.data);
 
-        let resWitness = await fetch(witnessUrl);
-        let witnessBuff = await resWitness.arrayBuffer();
-        let witness = new Uint8Array(witnessBuff);
+  let stdoutText = new TextDecoder().decode(stdoutArray);
+  let stderrText = new TextDecoder().decode(stderrArray);
 
-        console.log("downloading data and generating proof...");
+  console.log("stdout:", stdoutText);
+  console.log("stderr:", stderrText);
+}, 1000);  // Every 1 second
 
-        // Instantiate the WASI instance
-        console.log("loading go env and wasm...");
-        let wasi = new WASI({
-          args: [  
-            `[${witness.join(",")}]`,
-          ],
-          env: {},
-          bindings: {
-            ...WASI.defaultBindings,
-          }
-        });
 
-        // Fetch our Wasm File
-        console.log("fetching wasm...");
-        let response = await fetch(wasmUrl)
-        let wasmBytes = new Uint8Array(await response.arrayBuffer())
+  try {
+    wasi.start(instance)
+    console.log("Executing WASM...");
 
-        // Instantiate the WebAssembly file
-        console.log("instantiating wasm...");
-        let wasmModule = await WebAssembly.compile(wasmBytes);
+  let witnessPtr = instance.exports.alloc(witness.length);
+  let witnessView = new Uint8Array(instance.exports.memory.buffer, witnessPtr, witness.length);
+  witnessView.set(witness);
 
-        let instance = await WebAssembly.instantiate(wasmModule, {...wasi.getImports(wasmModule)});
+  instance.exports.generateProof(witnessPtr, witness.length);
+  //instance.exports.getProof(witness);
+  } catch (error) {
+      let stdoutArray = new Uint8Array(fds[1].file.data);
+      let stderrArray = new Uint8Array(fds[2].file.data);
+      let stdoutText = new TextDecoder().decode(stdoutArray);
+      let stderrText = new TextDecoder().decode(stderrArray);
+      console.log("stdout:", stdoutText);
+      console.log("stderr:", stderrText);
+      console.error("Error executing WebAssembly module:", error);
+  } finally {
+  // Stop the periodic task when the WebAssembly module has finished executing
+  clearInterval(intervalId);
+  }
+  //  instance.exports.generateProof(witness);
+    console.log("Finished");
+      let stdoutArray = new Uint8Array(fds[1].file.data);
+      let stderrArray = new Uint8Array(fds[2].file.data);
+      let stdoutText = new TextDecoder().decode(stdoutArray);
+      let stderrText = new TextDecoder().decode(stderrArray);
+      console.log("stdout:", stdoutText);
+      console.log("stderr:", stderrText);
+     // After the WebAssembly module has finished executing...
+ 
+  })();
+</script>
 
-        // Start the WebAssembly WASI instance!
-        wasi.start(instance);
-        instance.exports.generateProof(witness);
-
-        let stdout = wasi.getStdoutString(); // Get the contents of stdout
-        console.log(`Standard Output: ${stdout}`); // Write stdout data to the DOM
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  </script>
 
 </body>
 

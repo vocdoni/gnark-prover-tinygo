@@ -16,7 +16,7 @@ compile-prover-tinygo-g16:
 
 compile-prover-tinygo-g16-wasi:
 	tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
-	wasm-opt -O artifacts/g16_prover.wasi -o artifacts/g16_prover.wasi --enable-bulk-memory
+	#wasm-opt -O artifacts/g16_prover.wasi -o artifacts/g16_prover.wasi --enable-bulk-memory
 
 compile-circuit-plonk:
 	@go run ./cmd/compiler --protocol=plonk
@@ -105,7 +105,7 @@ run-tinygo-web-example-g16-wasi:
 	@echo "removing copied artifacts"
 	@rm ./wasi/zkcensus.ccs
 	@rm ./wasi/zkcensus.pkey
-	@cd ./examples/wasiweb && npm i && npx parcel index.html
+	@cd ./examples/wasiweb && go run .
 
 run-wasi-web-example-plonk:
 	@echo "compilling circuit and genering artifacts"
