@@ -1,1 +1,127 @@
-index_g16.html
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Gnark ZkCensus-Wasm prover test | Vocdoni</title>
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: lime;
+      padding: 1rem;
+    }
+
+    #log {
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    Gnark ZkCensus-Wasm prover test
+  </h1>
+
+  <pre>⚠️🚧 This repository is currently a <b>proof of concept</b>. 🚧⚠️</pre>
+
+  <div id="log"></div>
+
+
+  <script type="module">
+  let witnessUrl = "./artifacts/zkcensus.witness";
+  let wasmUrl = "./artifacts/g16_prover.wasm";
+
+  import { Fd } from "./dist/fd.js";
+  import { OpenFile } from "./dist/fs_fd.js"
+  import WASI from "./dist/wasi.js";
+  import { File } from "./dist/fs_core.js";
+
+  (async () => {
+    console.log("Reading artifacts...");
+    let resWitness = await fetch(witnessUrl);
+    let witnessBuff = await resWitness.arrayBuffer();
+    let witness = new Uint8Array(witnessBuff);
+
+    console.log("Loading WASI environment and WASM...");
+
+    let env = [];
+    let args = ["."];
+
+    let fds = [
+      new OpenFile(new File(new Uint8Array(), 'stdin')), // stdin
+      new OpenFile(new File(new Uint8Array(), 'stdout')), // stdout
+      new OpenFile(new File(new Uint8Array(), 'stderr')), // stderr
+    ];
+
+
+    console.log("Fetching WASM...");
+    let response = await fetch(wasmUrl);
+    let wasmBytes = new Uint8Array(await response.arrayBuffer());
+
+    console.log("Instantiating WASM...");
+    let wasmModule = await WebAssembly.compile(wasmBytes);
+
+    let wasi = new WASI(args, env, fds);
+    let instance = await WebAssembly.instantiate(wasmModule, {
+      "wasi_snapshot_preview1": wasi.wasiImport,
+    });
+  
+    if (!instance || !instance.exports || !instance.exports.memory) {
+      console.error('Failed to instantiate WebAssembly module or to access its exports or memory');
+      return;
+    }
+
+    // Start a periodic task that reads the stdout and stderr data
+  let intervalId = setInterval(() => {
+  let stdoutArray = new Uint8Array(fds[1].file.data);
+  let stderrArray = new Uint8Array(fds[2].file.data);
+
+  let stdoutText = new TextDecoder().decode(stdoutArray);
+  let stderrText = new TextDecoder().decode(stderrArray);
+
+  console.log("stdout:", stdoutText);
+  console.log("stderr:", stderrText);
+}, 1000);  // Every 1 second
+
+
+  try {
+    wasi.start(instance)
+    console.log("Executing WASM...");
+
+  let witnessPtr = instance.exports.alloc(witness.length);
+  let witnessView = new Uint8Array(instance.exports.memory.buffer, witnessPtr, witness.length);
+  witnessView.set(witness);
+
+  instance.exports.generateProof(witnessPtr, witness.length);
+  //instance.exports.getProof(witness);
+  } catch (error) {
+      let stdoutArray = new Uint8Array(fds[1].file.data);
+      let stderrArray = new Uint8Array(fds[2].file.data);
+      let stdoutText = new TextDecoder().decode(stdoutArray);
+      let stderrText = new TextDecoder().decode(stderrArray);
+      console.log("stdout:", stdoutText);
+      console.log("stderr:", stderrText);
+      console.error("Error executing WebAssembly module:", error);
+  } finally {
+  // Stop the periodic task when the WebAssembly module has finished executing
+  clearInterval(intervalId);
+  }
+  //  instance.exports.generateProof(witness);
+    console.log("Finished");
+      let stdoutArray = new Uint8Array(fds[1].file.data);
+      let stderrArray = new Uint8Array(fds[2].file.data);
+      let stdoutText = new TextDecoder().decode(stdoutArray);
+      let stderrText = new TextDecoder().decode(stderrArray);
+      console.log("stdout:", stdoutText);
+      console.log("stderr:", stderrText);
+     // After the WebAssembly module has finished executing...
+ 
+  })();
+</script>
+
+
+</body>
+
+</html>
