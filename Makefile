@@ -97,14 +97,15 @@ run-tinygo-web-example-g16-wasi:
 	@echo "copying artifacts"
 	@cp ./artifacts/g16_zkcensus.ccs ./wasi/zkcensus.ccs
 	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
+	@cp ./artifacts/zkcensus.witness ./wasi/witness.bin
 	@echo "compilling the prover for tinygo and wasi"
 	@make compile-prover-tinygo-g16-wasi
 	@cp ./artifacts/zkcensus.witness ./examples/wasiweb/artifacts/zkcensus.witness
 	@cp ./artifacts/g16_prover.wasi ./examples/wasiweb/artifacts/g16_prover.wasm
 	@cp ./artifacts/wasm_exec_tinygo.js ./examples/wasiweb/wasm_exec.js
-	@echo "removing copied artifacts"
-	@rm ./wasi/zkcensus.ccs
-	@rm ./wasi/zkcensus.pkey
+	#@echo "removing copied artifacts"
+	#@rm ./wasi/zkcensus.ccs
+	#@rm ./wasi/zkcensus.pkey
 	@cd ./examples/wasiweb && go run .
 
 run-wasi-web-example-plonk:
@@ -122,3 +123,16 @@ run-wasi-web-example-plonk:
 	@rm ./wasi/zkcensus.srs
 	@rm ./wasi/zkcensus.pkey
 	@cd ./examples/tinygowasi && npm i && npx parcel index.html
+
+prover-tinygo-g16-wasi-wasmtime:
+	echo "compilling circuit and genering artifacts"
+	@make compile-circuit-g16
+	echo "copying artifacts"
+	@cp ./artifacts/g16_zkcensus.ccs ./wasi/zkcensus.ccs
+	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
+	@cp ./artifacts/zkcensus.witness ./wasi/witness.bin
+	echo "compilling the prover for tinygo (wasi)"
+	@tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
+	#@wasmtime run artifacts/g16_proces.wasi
+
+

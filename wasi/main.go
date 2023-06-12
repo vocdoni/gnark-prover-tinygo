@@ -16,19 +16,24 @@ var circuit []byte
 //go:embed zkcensus.pkey
 var epkey []byte
 
+//go:embed witness.bin
+var witness []byte
+
 func main() {
+	getProof()
 }
 
 //export start
 func start() {
 	fmt.Println("start!!!")
+	getProof()
 }
 
 //export getProof
-func getProof(bwitness []byte) {
+func getProof() {
 	fmt.Println("executing generateProof")
-	fmt.Printf("witness size %d\n", len(bwitness))
-	if _, _, err := prover.GenerateProofGroth16(circuit, epkey, bwitness); err != nil {
+	fmt.Printf("witness size %d\n", len(witness))
+	if _, _, err := prover.GenerateProofGroth16(circuit, epkey, witness); err != nil {
 		fmt.Println(err)
 	}
 }

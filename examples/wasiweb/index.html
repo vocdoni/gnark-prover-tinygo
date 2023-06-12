@@ -94,8 +94,8 @@
   let witnessView = new Uint8Array(instance.exports.memory.buffer, witnessPtr, witness.length);
   witnessView.set(witness);
 
-  instance.exports.generateProof(witnessPtr, witness.length);
-  //instance.exports.getProof(witness);
+  //instance.exports.generateProof(witnessPtr, witness.length);
+  instance.exports.getProof();
   } catch (error) {
       let stdoutArray = new Uint8Array(fds[1].file.data);
       let stderrArray = new Uint8Array(fds[2].file.data);
