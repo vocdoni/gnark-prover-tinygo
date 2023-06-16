@@ -113,14 +113,16 @@ func ZkCensusInputs(nLevels, nKeys int) (ZkCensusCircuit, error) {
 }
 
 func (z *ZkCensusCircuit) String() string {
+	a := z.CensusRoot.(*big.Int)
+	fmt.Printf("CensusRoot: %x | %s\n", a.Bytes(), a.String())
 	str := strings.Builder{}
-	str.WriteString(fmt.Sprintf("ElectionId: %x\n", z.ElectionId))
-	str.WriteString(fmt.Sprintf("CensusRoot: %x\n", z.CensusRoot))
-	str.WriteString(fmt.Sprintf("Nullifier: %x\n", z.Nullifier))
-	str.WriteString(fmt.Sprintf("FactoryWeight: %s\n", z.FactoryWeight))
-	str.WriteString(fmt.Sprintf("VoteHash: %x\n", z.VoteHash))
-	str.WriteString(fmt.Sprintf("Siblings: %x\n", z.CensusSiblings))
-	str.WriteString(fmt.Sprintf("PrivKey: %x\n", z.PrivateKey))
-	str.WriteString(fmt.Sprintf("VotingWeight: %s\n", z.VotingWeight))
+	str.WriteString(fmt.Sprintf("ElectionId: %#v\n", z.ElectionId))
+	str.WriteString(fmt.Sprintf("CensusRoot: %#v\n", z.CensusRoot))
+	str.WriteString(fmt.Sprintf("Nullifier: %#v\n", z.Nullifier))
+	str.WriteString(fmt.Sprintf("FactoryWeight: %#v\n", z.FactoryWeight))
+	str.WriteString(fmt.Sprintf("VoteHash: %#v\n", z.VoteHash))
+	str.WriteString(fmt.Sprintf("Siblings: %#v\n", z.CensusSiblings))
+	str.WriteString(fmt.Sprintf("PrivKey: %#v\n", z.PrivateKey))
+	str.WriteString(fmt.Sprintf("VotingWeight: %#v\n", z.VotingWeight))
 	return str.String()
 }

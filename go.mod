@@ -5,19 +5,21 @@ go 1.19
 // replace github.com/vocdoni/gnark-wasm-prover => /home/p4u/repos/vocdoni/gprover
 // replace github.com/vocdoni/gnark-wasm-prover => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-wasm-prover
 
-replace github.com/consensys/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
+//replace github.com/consensys/gnark-crypto => /home/p4u/repos/vocdoni/gnark-crypto
+//replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
+//replace github.com/vocdoni/go-snark => /home/p4u/repos/vocdoni/go-snark
 
-replace github.com/consensys/gnark => /home/p4u/repos/vocdoni/gnark
+replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230609152227-b0fa77ea116a
 
-//replace github.com/consensys/gnark => github.com/vocdoni/gnark v0.0.0-20230413134136-187f3b3ead69
-
-//replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230411213837-3e72368bec7e
+replace github.com/consensys/gnark-crypto => github.com/vocdoni/gnark-crypto v0.10.1-0.20230616100730-4d2caf756b80
 
 require (
-	github.com/consensys/gnark v0.7.2-0.20230314134620-02dca8cec284
-	github.com/consensys/gnark-crypto v0.10.1-0.20230426090045-2a781ae21a86
+	github.com/consensys/gnark v0.7.2-0.20230609182217-172cc2499244
+	github.com/consensys/gnark-crypto v0.11.1-0.20230615015719-a3b568a67d79
 	github.com/frankban/quicktest v1.14.4
 	github.com/iden3/go-iden3-crypto v0.0.13
+	github.com/vocdoni/go-snark v0.0.0-20230616101019-5479a4d145b6
+	github.com/wasilibs/nottinygc v0.3.1-0.20230616013945-a17c52165f04
 	go.vocdoni.io/dvote v1.0.4-0.20230321132211-6095f229cd59
 )
 
@@ -43,6 +45,7 @@ require (
 	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/magefile/mage v1.14.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect

@@ -52,7 +52,7 @@ func main() {
 		fmt.Printf("public witness: %x\n", publicWitness)
 	case "groth16":
 		fmt.Println("calling generateProof function")
-		proof, publicWitness, err := cp.GenerateProofGroth16(bccs, bpkey, bwitness)
+		proof, publicWitness, err := cp.GenerateProofGroth16GoSnark(bpkey, bwitness)
 		if err != nil {
 			panic(err)
 		}

@@ -1,3 +1,5 @@
+WASMTIME_BACKTRACE_DETAILS=1
+
 compile-prover-go-plonk:
 	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o artifacts/plonk_prover.wasm wasm/plonk/main.go
 	wasm-opt -O artifacts/plonk_prover.wasm -o artifacts/plonk_prover.wasm --enable-bulk-memory
@@ -11,11 +13,11 @@ compile-prover-tinygo-plonk:
 	wasm-opt -O artifacts/plonk_prover.wasm -o artifacts/plonk_prover.wasm --enable-bulk-memory
 
 compile-prover-tinygo-g16:
-	tinygo build -target=wasm -opt=1 -no-debug -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
+	tinygo build -target=wasm -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasm wasm/g16/main.go
 	#wasm-opt -O artifacts/g16_prover.wasm -o artifacts/g16_prover.wasm --enable-bulk-memory
 
 compile-prover-tinygo-g16-wasi:
-	tinygo build -target=wasi -opt=1 -scheduler=none -o artifacts/g16_prover.wasi wasi/main.go
+	tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
 	#wasm-opt -O artifacts/g16_prover.wasi -o artifacts/g16_prover.wasi --enable-bulk-memory
 
 compile-circuit-plonk:
@@ -124,7 +126,7 @@ run-wasi-web-example-plonk:
 	@rm ./wasi/zkcensus.pkey
 	@cd ./examples/tinygowasi && npm i && npx parcel index.html
 
-prover-tinygo-g16-wasi-wasmtime:
+prover-tinygo-g16-wasi-wazero:
 	echo "compilling circuit and genering artifacts"
 	@make compile-circuit-g16
 	echo "copying artifacts"
@@ -132,7 +134,9 @@ prover-tinygo-g16-wasi-wasmtime:
 	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
 	@cp ./artifacts/zkcensus.witness ./wasi/witness.bin
 	echo "compilling the prover for tinygo (wasi)"
-	@tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
-	#@wasmtime run artifacts/g16_proces.wasi
+	tinygo build -target=wasi -opt=s -gc=custom -tags="custommalloc nottinygc_finalizer" -scheduler=none -o artifacts/g16_prover.wasi wasi/main.go
+	#tinygo build -target=wasi -gc=conservative -opt=s -scheduler=none -o artifacts/g16_prover.wasi wasi/main.go
+	@wazero run artifacts/g16_prover.wasi
+	#@wzprof -sample 1 -memprofile /tmp/profile artifacts/g16_prover.wasi
 
 
