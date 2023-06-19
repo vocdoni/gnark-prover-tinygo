@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gnark-prover-tinygo/prover"
 	"unsafe"
+	_ "github.com/wasilibs/nottinygc"
 )
 
 //go:embed zkcensus.ccs
@@ -46,9 +47,4 @@ func GenerateProof(witnessPtr *byte, witnessLen int) {
 	if _, _, err := prover.GenerateProofGroth16(circuit, epkey, witnessSlice); err != nil {
 		fmt.Println(err)
 	}
-}
-
-//export alloc
-func alloc(size int) unsafe.Pointer {
-	return unsafe.Pointer(&make([]byte, size)[0])
 }

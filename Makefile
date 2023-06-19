@@ -132,7 +132,8 @@ prover-tinygo-g16-wasi-wasmtime:
 	@cp ./artifacts/g16_zkcensus.pkey ./wasi/zkcensus.pkey
 	@cp ./artifacts/zkcensus.witness ./wasi/witness.bin
 	echo "compilling the prover for tinygo (wasi)"
-	@tinygo build -target=wasi -opt=1 -scheduler=asyncify -o artifacts/g16_prover.wasi wasi/main.go
-	#@wasmtime run artifacts/g16_proces.wasi
+	@tinygo build -target=wasi -opt=1 -gc=custom -scheduler=none -tags="custommalloc nottinygc_finalizer" -o artifacts/g16_prover.wasi wasi/main.go
+	@wazero run artifacts/g16_prover.wasi
+	#@wzprof -sample 1 -memprofile /tmp/profile artifacts/g16_prover.wasi
 
 
