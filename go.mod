@@ -1,6 +1,6 @@
 module gnark-prover-tinygo
 
-go 1.19
+go 1.25.0
 
 // replace github.com/vocdoni/gnark-wasm-prover => /home/p4u/repos/vocdoni/gprover
 // replace github.com/vocdoni/gnark-wasm-prover => /Users/lucasmenendez/Workspace/vocdoni/forks/gnark-wasm-prover
@@ -54,9 +54,9 @@ require (
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/rs/zerolog v1.29.0 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
